@@ -128,7 +128,7 @@
                     </div>
                     <div class="info">
                         <div class="title">
-                            {{currMusic.title||'请选择播放音乐'}}
+                            {{currMusic.title||currMusic.fileName||'请选择播放音乐'}}
                         </div>
                         <div class="author">{{currMusic.artist}}</div>
                     </div>
@@ -162,6 +162,39 @@ import 'element-ui/lib/theme-chalk/index.css';
 const fs  = window.require("fs");
 const NodeID3 = require('node-id3')
 let musicAudio = new Audio()
+/* var http = require('http');
+var querystring = require('querystring');
+var post_data = {
+    types: 'search',
+    count: 20,
+    source: 'netease',
+    pages: 1,
+    name: '许嵩'
+};//这是需要提交的数据
+var content = querystring.stringify(post_data);
+var options = {
+  hostname: 'api.imjad.cn',
+  path: '/cloudmusic/?type=song&id=28012031&br=128000',
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+  }
+};
+var req = http.request(options, function (res) {
+  console.log('STATUS: ' + res.statusCode);
+  console.log('HEADERS: ' + JSON.stringify(res.headers));
+  res.setEncoding('utf8');
+  res.on('data', function (chunk) {
+    console.log('BODY: ' + chunk);
+  //JSON.parse(chunk)
+  });
+});
+req.on('error', function (e) {
+  console.log('problem with request: ' + e.message);
+});
+// write data to request body
+req.write(content);
+req.end(); */
 export default {
     data() {
         return {
@@ -330,6 +363,7 @@ export default {
                 musicAudio.src = fs.statSync(music.filePath);
                 let data = fs.readFileSync(music.filePath);
                 var musicBlob = new Blob([data], {type: 'audio/x-mpeg'})
+                console.log(musicBlob)
                 musicAudio.src = URL.createObjectURL(musicBlob)
                 musicAudio.play()
             }

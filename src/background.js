@@ -60,7 +60,7 @@ ipcMain.on("open-dialog",(event,msg)=>{
   console.log(msg)
   dialog.showOpenDialog({
     properties:['openFile','multiSelections'],
-    filters: [{ name: 'Music', extensions: ['mp3'] }]
+    filters: [{ name: 'Music', extensions: ['mp3','WAV','WMA','flac'] }]
   }).then(function(tracks){
     myMusic.addTracks(tracks.filePaths);
     console.log("持久化音乐列表数据")
