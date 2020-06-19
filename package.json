@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "node app.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
@@ -11,9 +12,16 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "files": [
+      "module",
+      "util"
+  ],
   "main": "background.js",
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "pac-proxy-agent": "^3.0.1",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.0.0",
@@ -37,7 +45,12 @@
     "node-sass": "^4.14.1",
     "vue": "^2.6.11",
     "vxe-table": "^2.9.11",
-    "xe-utils": "^2.4.7"
+    "xe-utils": "^2.4.7",
+    "husky": "^3.0.9",
+    "intelli-espower-loader": "^1.0.1",
+    "lint-staged": "^9.4.2",
+    "mocha": "^6.2.2",
+    "power-assert": "^1.6.1"
   },
   "eslintConfig": {
     "root": true,
@@ -51,7 +64,9 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-unused-vars":"off"
+    }
   },
   "browserslist": [
     "> 1%",

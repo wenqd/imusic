@@ -2,19 +2,7 @@
   <a-layout  style="min-height: 100vh">
     <a-layout id="main">
       <a-layout-header class="header">
-          <div class="logo">
-              <img src="../assets/logo.png" alt="I-Music">
-              <span>I Music</span>
-          </div>
-          <div class="search">
-          </div>
-          <div class="tool">
-              <div class="win-tool">
-                <i class="ifont icon-minimum" @click="winToolClick('min')"></i>
-                <i class="ifont icon-maximize" @click="winToolClick('max')"></i>
-                <i class="ifont icon-close" @click="winToolClick('close')"></i>
-              </div>
-          </div>
+          <header-bar></header-bar>
       </a-layout-header>
       <a-layout-content class="content">
         <div class="title">
@@ -102,56 +90,7 @@
         </div>
       </a-layout-content>
       <a-layout-footer class="footer">
-           <div class="audio">
-                <div class="audio-tool">
-                    <a-row>
-                      <a-col :span="8">
-                          <i class="ifont icon-1_music83" style="font-size: 30px;"
-                             @click="changeMusic('pre')"
-                          ></i>
-                      </a-col>
-                      <a-col :span="8">
-                          <i :class="{'ifont':true,'icon-1_music73':!playStatus.isPlay,'icon-1_music87':playStatus.isPlay}" style="font-size: 40px;" 
-                            @click="playPause"
-                          ></i>
-                      </a-col>
-                      <a-col :span="8">
-                          <i class="ifont icon-1_music82" style="font-size: 30px;"
-                            @click="changeMusic('next')"
-                          ></i>
-                      </a-col>
-                    </a-row>
-                </div>
-                <div class="audio-setting">
-                    <div class="fengmian">
-                        <img :class="{Rotation:playStatus.isPlay}" :src="currMusic.image||require('../assets/fengmian.png')" alt="专辑图片">
-                    </div>
-                    <div class="info">
-                        <div class="title">
-                            {{currMusic.title||currMusic.fileName||'请选择播放音乐'}}
-                        </div>
-                        <div class="author">{{currMusic.artist}}</div>
-                    </div>
-                </div>
-                <div class="audio-process">
-                    <div class="start-time">
-                        {{playStatus.currTime}}
-                    </div>
-                    <a-progress
-                         class="progress"
-                        :stroke-color="{
-                            '0%': '#108ee9',
-                            '100%': '#87d068',
-                        }"
-                        selection ={}
-                        :percent="playStatus.percent"
-                        :showInfo="false"
-                    />
-                    <div class="end-time">
-                        {{playStatus.duration}}
-                    </div>
-                </div>
-           </div>
+           <music-play :currMusic="currMusic" :playStatus="playStatus" :allTracks="allTracks"></music-play>
         </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -159,42 +98,18 @@
 <script>
 const { ipcRenderer }  = window.require('electron')
 import 'element-ui/lib/theme-chalk/index.css';
-const fs  = window.require("fs");
-const NodeID3 = require('node-id3')
-let musicAudio = new Audio()
-/* var http = require('http');
-var querystring = require('querystring');
-var post_data = {
-    types: 'search',
-    count: 20,
-    source: 'netease',
-    pages: 1,
-    name: '许嵩'
-};//这是需要提交的数据
-var content = querystring.stringify(post_data);
-var options = {
-  hostname: 'api.imjad.cn',
-  path: '/cloudmusic/?type=song&id=28012031&br=128000',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-  }
-};
-var req = http.request(options, function (res) {
-  console.log('STATUS: ' + res.statusCode);
-  console.log('HEADERS: ' + JSON.stringify(res.headers));
-  res.setEncoding('utf8');
-  res.on('data', function (chunk) {
-    console.log('BODY: ' + chunk);
-  //JSON.parse(chunk)
+const axios = require('axios')
+import HeaderBar from '../components/HeaderBar'
+import MusicPlay from '../components/MusicPlay'
+axios
+  .get('http://127.0.0.1:3000/song/url?id=33894312',{
+   })
+  .then(res => {
+    console.log('数据是:', res);
+  })
+  .catch((e) => {
+    console.log(e);
   });
-});
-req.on('error', function (e) {
-  console.log('problem with request: ' + e.message);
-});
-// write data to request body
-req.write(content);
-req.end(); */
 export default {
     data() {
         return {
@@ -225,6 +140,7 @@ export default {
         };
         
     },
+    components:{HeaderBar,MusicPlay},
     mounted(){
         const v_this = this
         ipcRenderer.on("selected_file",(event,filesPath)=>{
@@ -236,51 +152,12 @@ export default {
             console.log(v_this.tracks)
 
         })
-        musicAudio.addEventListener("loadedmetadata",()=>{
-            v_this.playStatus.duration = this.timeToMinute(musicAudio.duration)
-        })
-        musicAudio.addEventListener("timeupdate",()=>{
-            v_this.playStatus.currTime = this.timeToMinute(musicAudio.currentTime)
-            if(v_this.playStatus.currTime===v_this.playStatus.duration){
-                v_this.playStatus.isPlay=false
-            }
-            v_this.playStatus.percent = parseFloat((musicAudio.currentTime/musicAudio.duration)*100)
-        })
     },
     watch:{
-        currMusic:{
-            handler(newval,oldval){
-                if(!(this.currMusic.image)){
-                    this.currMusic.image = this.getImgUrl(newval)
-                }
-                if(newval === oldval){
-                    this.getImgUrl(newval)
-                    this.playMusic(newval,false)
-                }else{
-                    this.playMusic(newval,true)
-                }
-            },
-            deep:true
-        },
     },
     methods:{
         selectLocalMusic(){
             ipcRenderer.send("open-dialog", "打开选择音乐窗口");
-        },
-        //菜单栏按钮处理
-        winToolClick(type){
-            if(type==="min"){
-                //发送最小化命令
-                ipcRenderer.send('window-min');
-            }
-            if(type==="max"){
-                //发送最小化命令
-                ipcRenderer.send('window-max');
-            }
-            if(type==="close"){
-                //发送最小化命令
-                ipcRenderer.send('window-close');
-            }
         },
         handleDbClickChange({ row }) {
             this.currMusic = row;
@@ -307,7 +184,7 @@ export default {
         },
         //本地音乐搜索
         onSearch({data}){
-            if(data==""){
+            if(data===null){
                 this.tracks  = this.allTracks
                 return
             }
@@ -321,90 +198,6 @@ export default {
                 }
             })
         },
-        //播放暂停控制
-        playPause(){
-            if(this.playStatus.isPlay){
-                musicAudio.pause()
-                this.playStatus.isPlay=false;
-            }else{
-                if(musicAudio.src!==""){
-                    musicAudio.play();
-                    this.playStatus.isPlay=true;
-                }
-            }
-        },
-        //切换音乐
-        changeMusic(type){
-            const v_this = this
-            let index = 0;
-            this.tracks.map((item,k)=>{
-                if(item.id===v_this.currMusic.id){
-                    index = k
-                }
-            })
-            if(type == "pre"){
-                if(index === 0){
-                    index = this.tracks.length
-                }
-                this.currMusic = this.tracks[index-1]
-            }else if(type == "next"){
-                if(index === this.tracks.length-1){
-                    index = -1
-                }
-                this.currMusic = this.tracks[index+1]
-            }
-        },
-        //读取音乐播放
-        playMusic(music,bool){
-            if(bool){
-               //musicAudio.src = music.filePath;
-                //获取本地json文件文件的路径
-                // 读取本地文件
-                musicAudio.src = fs.statSync(music.filePath);
-                let data = fs.readFileSync(music.filePath);
-                var musicBlob = new Blob([data], {type: 'audio/x-mpeg'})
-                console.log(musicBlob)
-                musicAudio.src = URL.createObjectURL(musicBlob)
-                musicAudio.play()
-            }
-            musicAudio.play()
-            this.playStatus.isPlay = true
-        },
-        //获取音乐专辑图片
-        getImgUrl(music){
-            if(music.filePath){
-                let data = fs.readFileSync(music.filePath);
-                let tags = NodeID3.read(data)
-                if(tags.image){
-                    var imgblob = new Blob([tags.image.imageBuffer])
-                    var url = URL.createObjectURL(imgblob)
-                    return url
-                }else{
-                    return require('../assets/fengmian.png')
-                }
-            }
-        },
-        // 秒转换分钟00:00:00格式
-        timeToMinute(times){
-            var t="";
-            if(times > -1){
-                //var hour = Math.floor(times/3600);
-                var min = Math.floor(times/60) % 60;
-                var sec = times % 60;
-                /* if(hour < 10) {
-                    t = '0'+ hour + ":";
-                } else {
-                    t = hour + ":";
-                }
-                */
-                if(min < 10){t += "0";}
-                t += min + ":";
-                if(sec < 10){t += "0";}
-                t += sec.toFixed(2);
-            }
-            t=t.substring(0,t.length-3);
-            return t;
-        }
     }
 };
 </script>
@@ -457,46 +250,6 @@ export default {
         right: 0;
         z-index: 9;
         -webkit-app-region: drag;
-        .logo{
-            width: 300px;
-            img{
-                height: 26px;
-                padding-left: 15px;
-                display: inline-block;
-                box-sizing: border-box;
-                vertical-align: middle;
-            }
-            span{
-                font-size: 20px;
-                padding-left: 12px;
-                display: inline-block;
-                box-sizing: border-box;
-                vertical-align: middle;
-            }
-        }
-        .search{
-            flex: 1;
-        }
-        .tool{
-            width: 300px;
-            -webkit-app-region: no-drag;
-            .win-tool{
-                width: 70px;
-                display: flex;
-                flex-direction: row;
-                justify-content:space-between;
-                position: absolute;
-                right: 20px;
-                i{
-                    font-size: 13px;
-                    color: #e29595;
-                    cursor: pointer;
-                }
-                i:hover{
-                    color: #fff;
-                }
-            }
-        }
     }
     .content{
         background-color: #fafafa;
@@ -592,82 +345,6 @@ export default {
         left: 0;
         right: 0;
         z-index: 9;
-        .audio{
-            display: flex;
-            flex-direction: row;
-            justify-content:space-between;
-            border-top: 1px solid #e1e1e1;
-            margin-top: -1px;
-            .audio-tool{
-                width: 180px;
-                text-align: center;
-                padding: 0 15px;
-                color: #c62f2f;
-                div{
-                    height: 60px;
-                    line-height: 60px;
-                }
-                i{
-                    cursor: pointer;
-                }
-            }
-            .audio-process{
-                flex: 1;
-                padding: 18px 35px 0 20px;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                color:#000;
-                .start-time{
-                    text-align: center;
-                    height: 24px;
-                    line-height: 24px;
-                    margin-right: 15px;
-                }
-                .end-time{
-                    width: 40px;
-                    text-align: center;
-                    height: 24px;
-                    line-height: 24px;
-                    margin-left: 15px;
-                }
-                .progress{
-                    flex:1
-                }
-            }
-            .audio-setting{
-                width: 160px;
-                height: 60px;
-                font-size: 12px;
-                display: flex;
-                flex-direction: row;
-                div{
-                    overflow:hidden;
-                    white-space:nowrap;
-                    text-overflow: ellipsis;
-                }
-                .fengmian{
-                    line-height: 60px;
-                    width: 35px;
-                    margin-right: 10px;
-                    img{
-                        width: 33px;
-                        height: 33px;
-                        border-radius: 50%;
-                    }
-                }
-                .info{
-                    flex: 1;
-                    .title{
-                        color:#000000;
-                        margin: 13px 0 1px;
-                    }
-                    .author{
-                        color:#7d7d7d
-                    }
-                }
-            }
-        }
     }
 }
 @-webkit-keyframes rotation{

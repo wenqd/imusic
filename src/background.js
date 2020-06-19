@@ -111,3 +111,5 @@ if (isDevelopment) {
     })
   }
 }
+require ('./neteaseCloudMusic')
+
