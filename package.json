@@ -13,8 +13,8 @@
     "postuninstall": "electron-builder install-app-deps"
   },
   "files": [
-      "module",
-      "util"
+    "module",
+    "util"
   ],
   "main": "background.js",
   "dependencies": {
@@ -27,30 +27,31 @@
     "@vue/cli-plugin-babel": "^4.0.0",
     "@vue/cli-plugin-eslint": "^4.0.0",
     "@vue/cli-service": "^4.0.0",
+    "ant-design-vue": "^1.6.2",
     "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
     "electron": "^9.0.0",
     "electron-chromedriver": "^9.0.0",
     "electron-store": "^5.2.0",
+    "element-ui": "^2.13.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "sass-loader": "^8.0.2",
-    "uuid": "^8.1.0",
-    "vue-cli-plugin-electron-builder": "^2.0.0-rc.2",
-    "vue-template-compiler": "^2.6.11",
-    "ant-design-vue": "^1.6.2",
-    "core-js": "^3.6.5",
-    "element-ui": "^2.13.2",
-    "music-metadata": "^6.4.0",
-    "node-id3": "^0.1.17",
-    "node-sass": "^4.14.1",
-    "vue": "^2.6.11",
-    "vxe-table": "^2.9.11",
-    "xe-utils": "^2.4.7",
     "husky": "^3.0.9",
     "intelli-espower-loader": "^1.0.1",
     "lint-staged": "^9.4.2",
     "mocha": "^6.2.2",
-    "power-assert": "^1.6.1"
+    "music-metadata": "^6.4.0",
+    "node-id3": "^0.1.17",
+    "node-sass": "^4.14.1",
+    "power-assert": "^1.6.1",
+    "sass-loader": "^8.0.2",
+    "uuid": "^8.1.0",
+    "vue": "^2.6.11",
+    "vue-cli-plugin-electron-builder": "^2.0.0-rc.2",
+    "vue-slider-component": "^3.1.5",
+    "vue-template-compiler": "^2.6.11",
+    "vxe-table": "^2.9.11",
+    "xe-utils": "^2.4.7"
   },
   "eslintConfig": {
     "root": true,
@@ -65,7 +66,7 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-vars":"off"
+      "no-unused-vars": "off"
     }
   },
   "browserslist": [

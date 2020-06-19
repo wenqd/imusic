@@ -91,6 +91,7 @@
       </a-layout-content>
       <a-layout-footer class="footer">
            <music-play :currMusic="currMusic" :playStatus="playStatus" :allTracks="allTracks"></music-play>
+           <i class="suofang ifont icon-suofang"></i>
         </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -345,19 +346,15 @@ export default {
         left: 0;
         right: 0;
         z-index: 9;
+        .suofang{
+            position: absolute;
+            bottom: 0px;
+            right: 3px;
+            font-size: 12px;
+            color: #000;
+            z-index: 999;
+        }
     }
-}
-@-webkit-keyframes rotation{
-from {-webkit-transform: rotate(0deg);}
-to {-webkit-transform: rotate(360deg);}
-}
-
-.Rotation{
--webkit-transform: rotate(360deg);
-animation: rotation 5s linear infinite;
--moz-animation: rotation 5s linear infinite;
--webkit-animation: rotation 5s linear infinite;
--o-animation: rotation 5 linear infinite;
 }
 </style>
 <style lang="scss">

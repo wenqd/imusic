@@ -34,16 +34,7 @@
         <div class="start-time">
             {{playStatus.currTime}}
         </div>
-        <a-progress
-                class="progress"
-            :stroke-color="{
-                '0%': '#108ee9',
-                '100%': '#87d068',
-            }"
-            selection ={}
-            :percent="playStatus.percent"
-            :showInfo="false"
-        />
+        <vue-slider class="progress" v-model="playStatus.percent" :tooltip-formatter="dragFormatter" :lazy="true" @change="sliderChange"></vue-slider>
         <div class="end-time">
             {{playStatus.duration}}
         </div>
@@ -52,6 +43,8 @@
 </template>
 
 <script>
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 const fs  = window.require("fs");
 const NodeID3 = require('node-id3')
 const axios = require('axios')
@@ -63,6 +56,7 @@ export default {
           music:this.currMusic
       }
   },
+  components:{VueSlider},
   props:{
         currMusic: {//当前音乐
             type: Object,
@@ -117,9 +111,13 @@ export default {
         musicAudio.addEventListener("timeupdate",()=>{
             v_this.playStatus.currTime = this.timeToMinute(musicAudio.currentTime)
             if(v_this.playStatus.currTime===v_this.playStatus.duration){
-                v_this.playStatus.isPlay=false
+                //v_this.playStatus.isPlay=false
+                this.changeMusic("next")
             }
-            v_this.playStatus.percent = parseFloat((musicAudio.currentTime/musicAudio.duration)*100)
+            let value = parseInt((musicAudio.currentTime/musicAudio.duration)*100)
+            if(!(isNaN(value))){
+                v_this.playStatus.percent = value
+            }
         })
   },
   methods:{
@@ -185,6 +183,14 @@ export default {
                     return require('../assets/fengmian.png')
                 }
             }
+        },
+        //快进
+        sliderChange(value, index){
+            musicAudio.currentTime = parseFloat(musicAudio.duration*(value/100))
+        },
+        dragFormatter(val){
+            let times = parseFloat(musicAudio.duration*(val/100))
+            return this.timeToMinute(times);
         },
         // 秒转换分钟00:00:00格式
         timeToMinute(times){
@@ -253,7 +259,9 @@ export default {
             margin-left: 15px;
         }
         .progress{
-            flex:1
+            flex:1;
+            margin: 2px 0;
+            box-sizing:initial
         }
     }
     .audio-setting{
@@ -286,6 +294,18 @@ export default {
             .author{
                 color:#7d7d7d
             }
+        }
+        @-webkit-keyframes rotation{
+            from {-webkit-transform: rotate(0deg);}
+            to {-webkit-transform: rotate(360deg);}
+        }
+
+        .Rotation{
+            -webkit-transform: rotate(360deg);
+            animation: rotation 5s linear infinite;
+            -moz-animation: rotation 5s linear infinite;
+            -webkit-animation: rotation 5s linear infinite;
+            -o-animation: rotation 5 linear infinite;
         }
     }
 }
