@@ -121,7 +121,7 @@ export default {
         },
         //播放音乐
         playMusic(id) {
-            this.$store.commit("updateCurrMusic", {
+            this.$store.commit("musicstore/updateCurrMusic", {
                 id,
                 source: "neteaseCloud"
             });

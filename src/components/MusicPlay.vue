@@ -190,7 +190,7 @@ export default {
                 }
                 this.music = this.allTracks[index + 1];
             }
-            this.$store.commit("updateCurrMusic", this.music);
+            this.$store.commit("musicstore/updateCurrMusic", this.music);
         },
         //读取音乐播放
         playMusic(music, bool) {

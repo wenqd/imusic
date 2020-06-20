@@ -8,7 +8,7 @@
                 <div class="group-list">
                     <a-menu
                         class="menu"
-                        :openKeys="['sub1', 'sub2']"
+                        :openKeys="['sub1', 'sub2','sub3']"
                         :default-selected-keys="['1']"
                         :open-keys.sync="openKeys"
                         mode="inline"
@@ -40,23 +40,35 @@
                                 <i class="ifont icon-top" />Top 50
                             </a-menu-item>
                         </a-sub-menu>
+                        <a-sub-menu
+                            key="sub3"
+                            @titleClick="titleClick"
+                            disabled
+                        >
+                            <span slot="title"><span>创建的歌单</span></span>
+                            <template v-for="(list) in  playList">
+                                <a-menu-item :key="list.id">
+                                    <i class="ifont icon-playlist" />{{list.name}}
+                                </a-menu-item>
+                            </template>
+                        </a-sub-menu>
                     </a-menu>
                 </div>
                 <div class="content-r">
                     <local-music
-                        v-if="$store.state.showPanel === 'local'"
-                        :key="$store.state.showPanel"
+                        v-if="$store.state.musicstore.showPanel === 'local'"
+                        :key="$store.state.musicstore.showPanel"
                     ></local-music>
                     <search-music
-                        v-if="$store.state.showPanel === 'search'"
+                        v-if="$store.state.musicstore.showPanel === 'search'"
                     ></search-music>
                     <online-music
-                        v-if="$store.state.showPanel === 'online'"
+                        v-if="$store.state.musicstore.showPanel === 'online'"
                     ></online-music>
                     <div
                         v-if="
-                            $store.state.showPanel === '4' ||
-                                $store.state.showPanel === '5'
+                            $store.state.musicstore.showPanel === '4' ||
+                                $store.state.musicstore.showPanel === '5'
                         "
                     >
                         <div style="font-size: 20px;padding: 40px 20px">
@@ -67,8 +79,8 @@
             </a-layout-content>
             <a-layout-footer class="footer">
                 <music-play
-                    :currMusic="$store.state.currMusic"
-                    :allTracks="$store.state.allTracks"
+                    :currMusic="$store.state.musicstore.currMusic"
+                    :allTracks="$store.state.musicstore.allTracks"
                 ></music-play>
                 <i class="suofang ifont icon-suofang"></i>
             </a-layout-footer>
@@ -81,22 +93,42 @@ import MusicPlay from "../components/MusicPlay";
 import LocalMusic from "../page/LocalMusic";
 import SearchMusic from "../page/SearchMusic";
 import OnlineMusic from "../page/OnlineMusic";
+const axios = require("axios");
 export default {
     data() {
         return {
             current: ["mail"],
             openKeys: ["sub1"],
-            clickNum: 0
+            clickNum: 0,
+            playList:[]
         };
     },
     components: { HeaderBar, MusicPlay, LocalMusic, SearchMusic, OnlineMusic },
     watch: {},
+    mounted(){
+        const v_this = this
+        setTimeout(function(){
+            v_this.getPlayList()//获取歌单
+        },1000)
+    },
     methods: {
         handleClick(e) {
-            this.$store.commit("updateShowPanel", e.key);
+            this.$store.commit("musicstore/updateShowPanel", e.key);
         },
         titleClick(e) {
             console.log("titleClick", e);
+        },
+        getPlayList(){
+             axios
+                .get("http://127.0.0.1:0723/user/playlist?uid=" + this.$store.state.userstore.profile.userId, {})
+                .then(res => {
+                    if (res.data.code === 200) {
+                        this.playList = res.data.playlist
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
         }
     }
 };
@@ -154,7 +186,13 @@ export default {
 }
 .group-list /deep/ .ant-menu-item,
 .ant-menu-submenu-title [role="menuitem"] {
-    padding: 0 30px !important;
+    padding: 0 15px !important;
+}
+.group-list /deep/ .ant-menu-sub.ant-menu-inline > .ant-menu-item, .ant-menu-sub.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title{
+    height: 30px;
+    line-height: 30px;
+    font-size: 11px;
+    margin-bottom: 0px;
 }
 .group-list /deep/ .ant-menu-inline .ant-menu-selected::after,
 .ant-menu-inline .ant-menu-item-selected::after {

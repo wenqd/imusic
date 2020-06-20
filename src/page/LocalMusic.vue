@@ -18,7 +18,7 @@
             class="music-table"
             :tracks="tracks"
             :allTracks="allTracks"
-            :currMusic="$store.state.currMusic"
+            :currMusic="$store.state.musicstore.currMusic"
             @change="changeCurrMusic"
         ></music-table>
         <div v-if="allTracks.length == 0" class="empty-tmp">
@@ -42,8 +42,8 @@ export default {
     name: "LocalMusic",
     data() {
         return {
-            tracks: this.$store.state.allTracks,
-            allTracks: this.$store.state.allTracks, //所有本地音乐
+            tracks: this.$store.state.musicstore.allTracks,
+            allTracks: this.$store.state.musicstore.allTracks, //所有本地音乐
             currentRow: null,
             playStatus: {
                 //是否播放状态
@@ -61,7 +61,7 @@ export default {
             console.log(filesPath);
         });
         ipcRenderer.on("getTracks", (event, tracks) => {
-            this.$store.commit("updateAllTracks", tracks);
+            v_this.$store.commit("musicstore/updateAllTracks", tracks);
             v_this.allTracks = tracks;
             v_this.tracks = v_this.allTracks;
         });
@@ -72,7 +72,7 @@ export default {
             ipcRenderer.send("open-dialog", "打开选择音乐窗口");
         },
         changeCurrMusic(row) {
-            this.$store.commit("updateCurrMusic", row);
+            this.$store.commit("musicstore/updateCurrMusic", row);
         }
     }
 };

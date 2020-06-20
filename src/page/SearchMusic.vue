@@ -2,14 +2,14 @@
     <div>
         <div class="title">
             <div class="h_left">
-                <span>搜索<span style="color:#0c73c2">"{{$store.state.searchResult.searchtext }}"</span>,找到{{$store.state.searchResult.songCount }}首单曲</span>
+                <span>搜索<span style="color:#0c73c2">"{{$store.state.musicstore.searchResult.searchtext }}"</span>,找到{{$store.state.musicstore.searchResult.songCount }}首单曲</span>
             </div>
         </div>
         <music-table
             class="music-table"
             :tracks="tracks"
             :allTracks="allTracks"
-            :currMusic="$store.state.currMusic"
+            :currMusic="$store.state.musicstore.currMusic"
             @change="changeCurrMusic"
         ></music-table>
     </div>
@@ -35,7 +35,7 @@ export default {
     components: { MusicTable },
     computed:{
         allTracks(){
-            return this.$store.state.allTracks
+            return this.$store.state.musicstore.allTracks
         },
         tracks(){
             return this.allTracks
@@ -48,7 +48,7 @@ export default {
             ipcRenderer.send("open-dialog", "打开选择音乐窗口");
         },
         changeCurrMusic(row) {
-            this.$store.commit("updateCurrMusic", row);
+            this.$store.commit("musicstore/updateCurrMusic", row);
         },
     }
 };
