@@ -25,7 +25,12 @@
         </div>
         <div class="info">
             <div class="title">
-                {{music.title||music.fileName||'请选择播放音乐'}}
+                <a-tooltip  placement="topLeft">
+                    <template slot="title">
+                         {{music.title||music.fileName||'请选择播放音乐'}}
+                    </template>
+                     {{music.title||music.fileName||'请选择播放音乐'}}
+                </a-tooltip>
             </div>
             <div class="author">{{music.artist}}</div>
         </div>
@@ -96,6 +101,7 @@ export default {
                 }else{
                     this.playMusic(newval,true)
                 }
+                this.$emit('change',newval)
             },
             deep:true
         },

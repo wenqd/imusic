@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, protocol, BrowserWindow,ipcMain,dialog} from 'electron'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const MusicStore = require('./common/js/MusicDataStore')
 const myMusic = new MusicStore({name:'iMusic'})
 /*隐藏electron创听的菜单栏*/
@@ -80,6 +81,9 @@ app.on('ready', async () => {
   win.webContents.on('did-finish-load',()=>{
     win.send("getTracks",myMusic.getTracks())
   })
+  installExtension(VUEJS_DEVTOOLS )
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
 })
 //接收最小化命令
 ipcMain.on('window-min', function() {
