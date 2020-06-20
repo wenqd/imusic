@@ -2,7 +2,7 @@
     <div class="header">
         <div class="logo">
             <img src="../assets/logo.png" alt="I-Music" />
-            <span>I Music</span>
+            <span>{{$store.state.count}}</span>
         </div>
         <div class="search"></div>
         <div class="tool">

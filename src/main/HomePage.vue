@@ -45,10 +45,8 @@
             </a-layout-content>
             <a-layout-footer class="footer">
                 <music-play
-                    :currMusic="currMusic"
-                    :playStatus="playStatus"
-                    :allTracks="allTracks"
-                    @change="changeCurrMusic"
+                    :currMusic="$store.state.currMusic"
+                    :allTracks="$store.state.allTracks"
                 ></music-play>
                 <i class="suofang ifont icon-suofang"></i>
             </a-layout-footer>
@@ -204,8 +202,7 @@ export default {
                 height: 100%;
             }
         }
-        .music-table {
-            min-width: 200px;
+        .content-r{
             flex: 1;
             overflow: auto;
         }

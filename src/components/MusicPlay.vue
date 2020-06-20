@@ -190,6 +190,7 @@ export default {
                 }
                 this.music = this.allTracks[index + 1];
             }
+             this.$store.commit("updateCurrMusic",this.music)
         },
         //读取音乐播放
         playMusic(music, bool) {
@@ -200,7 +201,6 @@ export default {
                 musicAudio.src = fs.statSync(music.filePath);
                 let data = fs.readFileSync(music.filePath);
                 var musicBlob = new Blob([data], { type: "audio/x-mpeg" });
-                console.log(musicBlob);
                 musicAudio.src = URL.createObjectURL(musicBlob);
                 musicAudio.play();
             }

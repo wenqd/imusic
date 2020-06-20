@@ -2,10 +2,10 @@
     <div>
         <music-table
             class="music-table"
-          :tracks="tracks"
-          :currMusic="currMusic"
-          :allTracks="allTracks"
-          @change="changeCurrMusic"
+            :tracks = "tracks"
+            :allTracks = "allTracks"
+            :currMusic= "$store.state.currMusic"
+            @change="changeCurrMusic"
         ></music-table>
     </div>
 </template>
@@ -17,12 +17,9 @@ export default {
     name:"LocalMusic",
     data(){
         return {
-            tracks: [],
-            allTracks: [], //所有本地音乐
+            tracks: this.$store.state.allTracks,
+            allTracks: this.$store.state.allTracks, //所有本地音乐
             currentRow: null,
-            currMusic: {
-                fileName: "暂无正在播放的音乐..."
-            }, //当前音乐
             playStatus: {
                 //是否播放状态
                 isPlay: false,
@@ -36,17 +33,17 @@ export default {
     mounted() {
         const v_this = this;
         ipcRenderer.on("selected_file", (event, filesPath) => {
-        console.log(filesPath);
+            console.log(filesPath);
         });
         ipcRenderer.on("getTracks", (event, tracks) => {
-        v_this.allTracks = tracks;
-        v_this.tracks = v_this.allTracks;
-        console.log(v_this.tracks);
+            this.$store.commit("updateAllTracks",tracks)
+            v_this.allTracks = tracks;
+            v_this.tracks = v_this.allTracks;
         });
     },
     methods: {
         changeCurrMusic(row) {
-            this.currMusic = row;
+            this.$store.commit("updateCurrMusic",row)
         },
     }
 }
