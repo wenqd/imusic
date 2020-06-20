@@ -79,6 +79,11 @@ ipcMain.on("delete-track", (event, deleteId) => {
     const updateTracks = myMusic.deleteTrack(deleteId).getTracks();
     win.send("getTracks", updateTracks);
 });
+//查看引用
+ipcMain.on("view-track", (event) => {
+    const tracks = myMusic.getTracks();
+    win.send("getTracks", tracks);
+});
 app.on("ready", async () => {
     if (isDevelopment && !process.env.IS_TEST) {
         //

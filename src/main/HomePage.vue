@@ -20,7 +20,7 @@
                             disabled
                         >
                             <span slot="title"><span>我的音乐</span></span>
-                            <a-menu-item key="1">
+                            <a-menu-item key="local">
                                 <i class="ifont icon-ttpod" />本地音乐
                             </a-menu-item>
                         </a-sub-menu>
@@ -30,17 +30,39 @@
                             disabled
                         >
                             <span slot="title"><span>网易云音乐</span></span>
-                            <a-menu-item key="3">
-                                <i class="ifont icon-playlist" />我的歌单
+                            <a-menu-item key="online">
+                                <i class="ifont icon-playlist" />音乐在线
                             </a-menu-item>
                             <a-menu-item key="4">
+                                <i class="ifont icon-playlist" />我的歌单
+                            </a-menu-item>
+                            <a-menu-item key="5">
                                 <i class="ifont icon-top" />Top 50
                             </a-menu-item>
                         </a-sub-menu>
                     </a-menu>
                 </div>
                 <div class="content-r">
-                    <local-music></local-music>
+                    <local-music
+                        v-if="$store.state.showPanel === 'local'"
+                        :key="$store.state.showPanel"
+                    ></local-music>
+                    <search-music
+                        v-if="$store.state.showPanel === 'search'"
+                    ></search-music>
+                    <online-music
+                        v-if="$store.state.showPanel === 'online'"
+                    ></online-music>
+                    <div
+                        v-if="
+                            $store.state.showPanel === '4' ||
+                                $store.state.showPanel === '5'
+                        "
+                    >
+                        <div style="font-size: 20px;padding: 40px 20px">
+                            敬请期待...
+                        </div>
+                    </div>
                 </div>
             </a-layout-content>
             <a-layout-footer class="footer">
@@ -54,30 +76,24 @@
     </a-layout>
 </template>
 <script>
-const axios = require("axios");
 import HeaderBar from "../components/HeaderBar";
 import MusicPlay from "../components/MusicPlay";
 import LocalMusic from "../page/LocalMusic";
-axios
-    .get("http://127.0.0.1:0723/song/url?id=33894312", {})
-    .then(res => {
-        console.log("数据是:", res);
-    })
-    .catch(e => {
-        console.log(e);
-    });
+import SearchMusic from "../page/SearchMusic";
+import OnlineMusic from "../page/OnlineMusic";
 export default {
     data() {
         return {
             current: ["mail"],
-            openKeys: ["sub1"]
+            openKeys: ["sub1"],
+            clickNum: 0
         };
     },
-    components: { HeaderBar, MusicPlay, LocalMusic },
+    components: { HeaderBar, MusicPlay, LocalMusic, SearchMusic, OnlineMusic },
     watch: {},
     methods: {
         handleClick(e) {
-            console.log("click", e);
+            this.$store.commit("updateShowPanel", e.key);
         },
         titleClick(e) {
             console.log("titleClick", e);
@@ -202,7 +218,7 @@ export default {
                 height: 100%;
             }
         }
-        .content-r{
+        .content-r {
             flex: 1;
             overflow: auto;
         }

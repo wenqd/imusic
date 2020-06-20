@@ -190,7 +190,7 @@ export default {
                 }
                 this.music = this.allTracks[index + 1];
             }
-             this.$store.commit("updateCurrMusic",this.music)
+            this.$store.commit("updateCurrMusic", this.music);
         },
         //读取音乐播放
         playMusic(music, bool) {
@@ -198,14 +198,37 @@ export default {
                 //musicAudio.src = music.filePath;
                 //获取本地json文件文件的路径
                 // 读取本地文件
-                musicAudio.src = fs.statSync(music.filePath);
-                let data = fs.readFileSync(music.filePath);
-                var musicBlob = new Blob([data], { type: "audio/x-mpeg" });
-                musicAudio.src = URL.createObjectURL(musicBlob);
-                musicAudio.play();
+                if (music.source === "neteaseCloud") {
+                    axios
+                        .get(
+                            "http://127.0.0.1:0723/song/url?id=" + music.id,
+                            {}
+                        )
+                        .then(res => {
+                            console.log("数据是:", res);
+                            if (res.data.code === 200) {
+                                musicAudio.src = this.getOnlineUrl(
+                                    res.data.data
+                                );
+                                musicAudio.play();
+                            }
+                        })
+                        .catch(e => {
+                            console.log(e);
+                        });
+                } else {
+                    musicAudio.src = fs.statSync(music.filePath);
+                    let data = fs.readFileSync(music.filePath);
+                    var musicBlob = new Blob([data], { type: "audio/x-mpeg" });
+                    musicAudio.src = URL.createObjectURL(musicBlob);
+                    musicAudio.play();
+                }
             }
             musicAudio.play();
             this.playStatus.isPlay = true;
+        },
+        getOnlineUrl(data) {
+            return data[0].url;
         },
         //获取音乐专辑图片
         getImgUrl(music) {

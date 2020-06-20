@@ -1,25 +1,10 @@
 <template>
     <div class="music-table">
-        <div class="title">
-            <div class="h_left">
-                <h2>本地音乐</h2>
-                <span>共{{ tracks.length }}首</span>
-            </div>
-            <div class="h_right">
-                <a-button
-                    type="link"
-                    style="font-size: 11px;"
-                    @click="selectLocalMusic"
-                    >添加本地音乐</a-button
-                >
-            </div>
-        </div>
         <div class="music">
             <div v-show="allTracks.length > 0" style="width: 100%">
                 <div class="playAll">
                     <a-button
                         size="small"
-                        @click="selectLocalMusic"
                         icon="play-circle"
                         >播放全部</a-button
                     >
@@ -94,17 +79,6 @@
                     </vxe-table-column>
                 </vxe-table>
             </div>
-            <div v-if="allTracks.length == 0" class="empty-tmp">
-                <div class="desc">请添加本地音乐</div>
-                <div class="slogan">
-                    爱我所爱&nbsp;&nbsp;&nbsp;&nbsp;听你想听
-                </div>
-                <div>
-                    <a-button type="primary" @click="selectLocalMusic"
-                        >添加本地音乐</a-button
-                    >
-                </div>
-            </div>
         </div>
     </div>
 </template>
@@ -171,9 +145,6 @@ export default {
         }
     },
     methods: {
-        selectLocalMusic() {
-            ipcRenderer.send("open-dialog", "打开选择音乐窗口");
-        },
         handleDbClickChange({ row }) {
             this.music = row;
             this.$emit("change", row);
@@ -191,7 +162,7 @@ export default {
                     break;
                 case "remove":
                     //删除
-                    if (row && column) {
+                    if (row && column&&row.source!=="neteaseCloud") {
                         ipcRenderer.send("delete-track", row.id);
                     }
                     break;
@@ -248,7 +219,7 @@ export default {
     background-color: #e1e1e1;
 }
 //搜索框宽度
-.search-input /deep/ .ant-input-sm {
+.music-table .search-input /deep/ .ant-input-sm {
     border-radius: 45px !important;
     font-size: 12px;
     padding: 0 16px;
@@ -257,26 +228,6 @@ export default {
 </style>
 <style lang="scss" scoped>
 .music-table {
-    .title {
-        padding-top: 20px;
-        border-bottom: 0.5px solid #e1e1e1;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        height: 55px;
-        line-height: 38px;
-        .h_left {
-            h2 {
-                display: inline-block;
-                padding: 0 12px 0 20px;
-                font-size: 17px;
-            }
-            span {
-                font-size: 12px;
-                color: #666666;
-            }
-        }
-    }
     .music {
         .empty-tmp {
             text-align: center;

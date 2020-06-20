@@ -2,16 +2,7 @@
     <div>
         <div class="title">
             <div class="h_left">
-                <h2>本地音乐</h2>
-                <span>共{{ tracks.length }}首</span>
-            </div>
-            <div class="h_right">
-                <a-button
-                    type="link"
-                    style="font-size: 11px;"
-                    @click="selectLocalMusic"
-                    >添加本地音乐</a-button
-                >
+                <span>搜索<span style="color:#0c73c2">"{{$store.state.searchResult.searchtext }}"</span>,找到{{$store.state.searchResult.songCount }}首单曲</span>
             </div>
         </div>
         <music-table
@@ -21,17 +12,6 @@
             :currMusic="$store.state.currMusic"
             @change="changeCurrMusic"
         ></music-table>
-        <div v-if="allTracks.length == 0" class="empty-tmp">
-                <div class="desc">请添加本地音乐</div>
-                <div class="slogan">
-                    爱我所爱&nbsp;&nbsp;&nbsp;&nbsp;听你想听
-                </div>
-                <div>
-                    <a-button type="primary" @click="selectLocalMusic"
-                        >添加本地音乐</a-button
-                    >
-                </div>
-            </div>
     </div>
 </template>
 <script>
@@ -39,11 +19,9 @@ const { ipcRenderer } = window.require("electron");
 import "element-ui/lib/theme-chalk/index.css";
 import MusicTable from "../components/MusicTable";
 export default {
-    name: "LocalMusic",
+    name: "SearchMusic",
     data() {
         return {
-            tracks: this.$store.state.allTracks,
-            allTracks: this.$store.state.allTracks, //所有本地音乐
             currentRow: null,
             playStatus: {
                 //是否播放状态
@@ -51,21 +29,19 @@ export default {
                 duration: "0:00",
                 currTime: "0:00",
                 percent: 0 //百分比进度
-            }
+            },
         };
     },
     components: { MusicTable },
+    computed:{
+        allTracks(){
+            return this.$store.state.allTracks
+        },
+        tracks(){
+            return this.allTracks
+        }
+    },
     mounted() {
-        const v_this = this;
-        ipcRenderer.on("selected_file", (event, filesPath) => {
-            console.log(filesPath);
-        });
-        ipcRenderer.on("getTracks", (event, tracks) => {
-            this.$store.commit("updateAllTracks", tracks);
-            v_this.allTracks = tracks;
-            v_this.tracks = v_this.allTracks;
-        });
-        ipcRenderer.send("view-track",{});
     },
     methods: {
         selectLocalMusic() {
@@ -73,13 +49,13 @@ export default {
         },
         changeCurrMusic(row) {
             this.$store.commit("updateCurrMusic", row);
-        }
+        },
     }
 };
 </script>
 <style lang="scss" scoped>
 .title {
-    padding-top: 20px;
+    padding: 10px 10px 10px 16px;
     border-bottom: 0.5px solid #e1e1e1;
     display: flex;
     flex-direction: row;
