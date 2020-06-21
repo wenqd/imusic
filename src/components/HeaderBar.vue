@@ -29,9 +29,14 @@
                         :src="$store.state.userstore.profile.avatarUrl"
                         size="small"
                     />
-                    <a-button type="link">
-                        {{ $store.state.userstore.profile.nickname }}
-                    </a-button>
+                    <a-popover title="" trigger="hover">
+                        <template slot="content">
+                            <a-button @click="logout">退出登陆</a-button>
+                        </template>
+                        <a-button type="link">
+                            {{ $store.state.userstore.profile.nickname }}
+                        </a-button>
+                    </a-popover>
                     <a-icon type="caret-down" />
                 </div>
             </div>
@@ -81,6 +86,7 @@
                         v-model="formData.pwd"
                         id="error"
                         placeholder="请输入密码"
+                        type="password"
                     >
                         <a-icon slot="prefix" type="key" />
                     </a-input>
@@ -105,7 +111,7 @@
 const session = window.require("electron").remote.session;
 const { ipcRenderer } = window.require("electron");
 const axios = require("axios");
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 export default {
     name: "HeaderBar",
     data() {
@@ -218,7 +224,7 @@ export default {
         },
         //登陆
         login() {
-            const v_this = this
+            const v_this = this;
             this.$refs.loginform.validate(valid => {
                 if (valid) {
                     axios
@@ -241,10 +247,13 @@ export default {
                                 this.loginVisible = false;
 
                                 //cookie
-                                var cookies = res.data.cookie.split(";")
-                                cookies.map(item=>{
-                                    v_this.setCookie(item.split("=")[0],item.split("=")[1])
-                                })
+                                var cookies = res.data.cookie.split(";");
+                                cookies.map(item => {
+                                    v_this.setCookie(
+                                        item.split("=")[0],
+                                        item.split("=")[1]
+                                    );
+                                });
                             } else if (res.data.code === 502) {
                                 this.$message.error(res.data.msg);
                             }
@@ -258,20 +267,45 @@ export default {
                 }
             });
         },
-        setCookie(name,value){
+        logout() {
+            axios
+                .get("http://127.0.0.1:0723/logout/", {})
+                .then(res => {
+                    console.log("退出结果:", res);
+                    if (res.data.code === 200) {
+                        this.cleanCookie()
+                        this.getLoginStatus();
+                    } else if (res.data.code === 502) {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        },
+        setCookie(name, value) {
             let Days = 30;
-        let exp = new Date();
-        let date = Math.round(exp.getTime() / 1000) + Days * 24 * 60 * 60;
-        const cookie = {
-            url: "http://127.0.0.1:723",
-            name: name,
-            value: value,
-            expirationDate: date
-        };
-        session.defaultSession.cookies.set(cookie, error => {
+            let exp = new Date();
+            let date = Math.round(exp.getTime() / 1000) + Days * 24 * 60 * 60;
+            const cookie = {
+                url: "http://127.0.0.1:723",
+                name: name,
+                value: value,
+                expirationDate: date
+            };
+            session.defaultSession.cookies.set(cookie, error => {
+                if (error) console.error(error);
+            });
+        },
+        //清楚缓存
+        cleanCookie(){
+            session.defaultSession.clearStorageData({
+            origin: this.webApi,
+            storages: ['cookies']
+            }, function (error) {
             if (error) console.error(error);
-        });
-        }
+            })
+        },
     }
 };
 </script>

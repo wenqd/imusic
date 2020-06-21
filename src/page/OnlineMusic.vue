@@ -16,8 +16,8 @@
                                         class="item"
                                         @dblclick.native="playMusic(item.id)"
                                     >
-                                        <a-col :span="2">{{ index + 1 }}</a-col>
-                                        <a-col :span="14" class="name">{{
+                                        <a-col :span="3">{{ index + 1 }}</a-col>
+                                        <a-col :span="13" class="name">{{
                                             item.name
                                         }}</a-col>
                                         <a-col :span="8" class="artist">{{
@@ -39,8 +39,8 @@
                                         class="item"
                                         @dblclick.native="playMusic(item.id)"
                                     >
-                                        <a-col :span="2">{{ index + 1 }}</a-col>
-                                        <a-col :span="14" class="name">{{
+                                        <a-col :span="3">{{ index + 1 }}</a-col>
+                                        <a-col :span="13" class="name">{{
                                             item.name
                                         }}</a-col>
                                         <a-col :span="8" class="artist">{{
@@ -62,8 +62,8 @@
                                         class="item"
                                         @dblclick.native="playMusic(item.id)"
                                     >
-                                        <a-col :span="2">{{ index + 1 }}</a-col>
-                                        <a-col :span="14" class="name">{{
+                                        <a-col :span="3">{{ index + 1 }}</a-col>
+                                        <a-col :span="13" class="name">{{
                                             item.name
                                         }}</a-col>
                                         <a-col :span="8" class="artist">{{
@@ -135,16 +135,14 @@ export default {
         margin: 20px 40px;
         .top-card {
             /deep/ .ant-card-body {
-                padding: 13px 20px;
+                padding: 0px;
             }
             .item {
                 color: #000;
                 font-size: 12px;
                 padding: 5px 0;
                 cursor: pointer;
-                :hover {
-                    color: #c62f2f;
-                }
+                padding: 5px 17px;
                 .name {
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -157,6 +155,12 @@ export default {
                     white-space: nowrap;
                 }
             }
+            .item:hover {
+                color: #c62f2f;
+                background: #e0e0e2 !important;
+            }
+            .item:nth-of-type(odd){ background:#f5f5f7;} 
+            .item:nth-of-type(even){ background:#ffffff;} 
         }
     }
 }

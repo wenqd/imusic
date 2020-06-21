@@ -13,6 +13,7 @@ const musicstore = {
             songCount: 0,
             songs: [],
         },
+        playList:[],//歌单列表
         showPanel: "local", //显示的面板
     },
     mutations: {
@@ -51,6 +52,9 @@ const musicstore = {
             } else {
                 state.currMusic = music;
             }
+        },
+        updatePlayList(state, tracks,playList){
+            state.playList = playList;
         },
         updateAllTracks(state, tracks) {
             state.allTracks = tracks;

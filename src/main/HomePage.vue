@@ -31,10 +31,7 @@
                         >
                             <span slot="title"><span>网易云音乐</span></span>
                             <a-menu-item key="online">
-                                <i class="ifont icon-playlist" />音乐在线
-                            </a-menu-item>
-                            <a-menu-item key="4">
-                                <i class="ifont icon-playlist" />我的歌单
+                                <i class="ifont icon-bangdan" />热门榜单
                             </a-menu-item>
                             <a-menu-item key="5">
                                 <i class="ifont icon-top" />Top 50
@@ -47,7 +44,7 @@
                         >
                             <span slot="title"><span>创建的歌单</span></span>
                             <template v-for="(list) in  playList">
-                                <a-menu-item :key="list.id">
+                                <a-menu-item :key="'net_paly_list$'+list.id">
                                     <i class="ifont icon-playlist" />{{list.name}}
                                 </a-menu-item>
                             </template>
@@ -65,6 +62,11 @@
                     <online-music
                         v-if="$store.state.musicstore.showPanel === 'online'"
                     ></online-music>
+                    <play-list-music
+                        v-if="$store.state.musicstore.showPanel.indexOf('net_paly_list')>-1"
+                        :playId="current"
+                        :key="current"
+                    ></play-list-music>
                     <div
                         v-if="
                             $store.state.musicstore.showPanel === '4' ||
@@ -93,6 +95,7 @@ import MusicPlay from "../components/MusicPlay";
 import LocalMusic from "../page/LocalMusic";
 import SearchMusic from "../page/SearchMusic";
 import OnlineMusic from "../page/OnlineMusic";
+import PlayListMusic from "../page/PlayListMusic";
 const axios = require("axios");
 export default {
     data() {
@@ -103,8 +106,17 @@ export default {
             playList:[]
         };
     },
-    components: { HeaderBar, MusicPlay, LocalMusic, SearchMusic, OnlineMusic },
-    watch: {},
+    components: { HeaderBar, MusicPlay, LocalMusic, SearchMusic, OnlineMusic ,PlayListMusic},
+    computed:{
+        profile(){
+            return this.$store.state.userstore.profile
+        }
+    },
+    watch: {
+        profile(){
+             this.getPlayList()//获取歌单
+        }
+    },
     mounted(){
         const v_this = this
         setTimeout(function(){
@@ -114,6 +126,47 @@ export default {
     methods: {
         handleClick(e) {
             this.$store.commit("musicstore/updateShowPanel", e.key);
+            let  arr = e.key.split("$")
+            if(arr.length>1){
+                const listId = arr[1]
+                this.getMusicList(listId)
+                this.current = listId
+                return
+            }
+            this.current = e.key
+        },
+        getMusicList(listId) {
+            if (listId) {
+                this.$store.commit("musicstore/updateShowPanel", "net_paly_list");
+                axios
+                    .get(
+                        "http://127.0.0.1:0723/playlist/detail?id=" +listId,
+                        {}
+                    )
+                    .then(res => {
+                        console.log("数据是:", res);
+                        if (res.data.code === 200) {
+                            this.renderMusic(res.data.playlist);
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    });
+            }
+        },
+        renderMusic(data) {
+            let tracks = data.tracks.map(item => {
+                return {
+                    id: item.id,
+                    title: item.name,
+                    duration: item.duration,
+                    artist: item.ar[0].name,
+                    fileName: item.name,
+                    album: item.al.name,
+                    source: "neteaseCloud"
+                };
+            });
+            this.$store.commit("musicstore/updateAllTracks", tracks);
         },
         titleClick(e) {
             console.log("titleClick", e);
@@ -124,6 +177,7 @@ export default {
                 .then(res => {
                     if (res.data.code === 200) {
                         this.playList = res.data.playlist
+                        this.$store.commit("musicstore/updatePlayList", this.playList);
                     }
                 })
                 .catch(e => {
