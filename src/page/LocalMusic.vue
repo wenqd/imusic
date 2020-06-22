@@ -98,4 +98,27 @@ export default {
         }
     }
 }
+.empty-tmp {
+            text-align: center;
+            margin-top: 120px;
+            .desc {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+            .slogan {
+                font-size: 12px;
+                margin-bottom: 35px;
+                color: #888888;
+            }
+            button {
+                height: 55px;
+                width: 190px;
+                border-radius: 4px;
+                border: 0;
+                background-color: #1167a8;
+                color: #fff;
+                font-size: 17px;
+            }
+        }
 </style>
