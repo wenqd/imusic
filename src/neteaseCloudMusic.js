@@ -121,7 +121,7 @@ fs.readdirSync(path.join(__dirname, "module"))
         });
     });
 
-const port = process.env.PORT || "0723";
+const port = process.env.PORT || "8989";
 const host = process.env.HOST || "127.0.0.1";
 
 app_api.server = app_api.listen(port, host, () => {

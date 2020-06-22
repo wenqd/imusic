@@ -201,7 +201,7 @@ export default {
                 if (music.source === "neteaseCloud") {
                     axios
                         .get(
-                            "http://127.0.0.1:0723/song/url?id=" + music.id,
+                            "http://127.0.0.1:8989/song/url?id=" + music.id,
                             {}
                         )
                         .then(res => {

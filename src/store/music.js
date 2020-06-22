@@ -22,7 +22,7 @@ const musicstore = {
                 //网易云音乐
                 axios
                     .get(
-                        "http://127.0.0.1:0723/song/detail?ids=" + music.id,
+                        "http://127.0.0.1:8989/song/detail?ids=" + music.id,
                         {}
                     )
                     .then((res) => {

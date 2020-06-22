@@ -86,7 +86,7 @@ export default {
         getPlayDetail() {
             axios
                 .get(
-                    "http://127.0.0.1:0723/playlist/detail?id=" + this.playId,
+                    "http://127.0.0.1:8989/playlist/detail?id=" + this.playId,
                     {}
                 )
                 .then(res => {

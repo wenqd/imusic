@@ -160,7 +160,7 @@ export default {
                 this.$store.commit("musicstore/updateShowPanel", "search");
                 axios
                     .get(
-                        "http://127.0.0.1:0723/search?keywords=" +
+                        "http://127.0.0.1:8989/search?keywords=" +
                             this.searchtext,
                         {}
                     )
@@ -194,7 +194,7 @@ export default {
         //获取登陆状态
         getLoginStatus() {
             axios
-                .get("http://127.0.0.1:0723/login/status", {})
+                .get("http://127.0.0.1:8989/login/status", {})
                 .then(res => {
                     console.log("登陆状态:", res);
                     if (res.data.code === 200) {
@@ -229,7 +229,7 @@ export default {
                 if (valid) {
                     axios
                         .get(
-                            "http://127.0.0.1:0723/login/cellphone?phone=" +
+                            "http://127.0.0.1:8989/login/cellphone?phone=" +
                                 this.formData.phone +
                                 "&password=" +
                                 this.formData.pwd +
@@ -269,7 +269,7 @@ export default {
         },
         logout() {
             axios
-                .get("http://127.0.0.1:0723/logout/", {})
+                .get("http://127.0.0.1:8989/logout/", {})
                 .then(res => {
                     console.log("退出结果:", res);
                     if (res.data.code === 200) {
