@@ -14,7 +14,7 @@
                         :class="{
                             ifont: true,
                             'icon-1_music73': !playStatus.isPlay,
-                            'icon-1_music87': playStatus.isPlay
+                            'icon-1_music87': playStatus.isPlay,
                         }"
                         style="font-size: 40px;"
                         @click="playPause"
@@ -41,11 +41,7 @@
                 <div class="title">
                     <a-tooltip placement="topLeft">
                         <template slot="title">
-                            {{
-                                music.title ||
-                                    music.fileName ||
-                                    "请选择播放音乐"
-                            }}
+                            {{ music.title || music.fileName || "请选择播放音乐" }}
                         </template>
                         {{ music.title || music.fileName || "请选择播放音乐" }}
                     </a-tooltip>
@@ -82,7 +78,7 @@ export default {
     name: "MusicPlay",
     data() {
         return {
-            music: this.currMusic
+            music: this.currMusic,
         };
     },
     components: { VueSlider },
@@ -92,9 +88,9 @@ export default {
             type: Object,
             default: () => {
                 return {
-                    fileName: "暂无正在播放的音乐..."
+                    fileName: "暂无正在播放的音乐...",
                 };
-            }
+            },
         },
         playStatus: {
             //是否播放状态
@@ -104,17 +100,17 @@ export default {
                     isPlay: false,
                     duration: "0:00",
                     currTime: "0:00",
-                    percent: 0 //百分比进度
+                    percent: 0, //百分比进度
                 };
-            }
+            },
         },
         allTracks: {
             //所有音乐
             type: Array,
             default: () => {
                 return [];
-            }
-        }
+            },
+        },
     },
     watch: {
         music: {
@@ -130,11 +126,11 @@ export default {
                 }
                 this.$emit("change", newval);
             },
-            deep: true
+            deep: true,
         },
         currMusic(data) {
             this.music = data;
-        }
+        },
     },
     mounted() {
         const v_this = this;
@@ -142,16 +138,12 @@ export default {
             v_this.playStatus.duration = this.timeToMinute(musicAudio.duration);
         });
         musicAudio.addEventListener("timeupdate", () => {
-            v_this.playStatus.currTime = this.timeToMinute(
-                musicAudio.currentTime
-            );
+            v_this.playStatus.currTime = this.timeToMinute(musicAudio.currentTime);
             if (v_this.playStatus.currTime === v_this.playStatus.duration) {
                 //v_this.playStatus.isPlay=false
                 this.changeMusic("next");
             }
-            let value = parseInt(
-                (musicAudio.currentTime / musicAudio.duration) * 100
-            );
+            let value = parseInt((musicAudio.currentTime / musicAudio.duration) * 100);
             if (!isNaN(value)) {
                 v_this.playStatus.percent = value;
             }
@@ -200,20 +192,15 @@ export default {
                 // 读取本地文件
                 if (music.source === "neteaseCloud") {
                     axios
-                        .get(
-                            "http://127.0.0.1:8989/song/url?id=" + music.id,
-                            {}
-                        )
-                        .then(res => {
+                        .get("http://127.0.0.1:8989/song/url?id=" + music.id, {})
+                        .then((res) => {
                             console.log("数据是:", res);
                             if (res.data.code === 200) {
-                                musicAudio.src = this.getOnlineUrl(
-                                    res.data.data
-                                );
+                                musicAudio.src = this.getOnlineUrl(res.data.data);
                                 musicAudio.play();
                             }
                         })
-                        .catch(e => {
+                        .catch((e) => {
                             console.log(e);
                         });
                 } else {
@@ -246,9 +233,7 @@ export default {
         },
         //快进
         sliderChange(value, index) {
-            musicAudio.currentTime = parseFloat(
-                musicAudio.duration * (value / 100)
-            );
+            musicAudio.currentTime = parseFloat(musicAudio.duration * (value / 100));
         },
         dragFormatter(val) {
             let times = parseFloat(musicAudio.duration * (val / 100));
@@ -278,8 +263,8 @@ export default {
             }
             t = t.substring(0, t.length - 3);
             return t;
-        }
-    }
+        },
+    },
 };
 </script>
 

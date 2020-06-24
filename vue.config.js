@@ -42,7 +42,7 @@ module.exports = {
         },
        
         'dmg': {
-          'title': '龙的世界Mac',
+          'title': 'I Music',
           'icon': './public/logo.ico',
           'contents': [
             {
