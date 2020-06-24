@@ -11,6 +11,7 @@ module.exports = {
       "builderOptions": {
         "appId": "wenqd.github.io",
         "productName":"IMusic",
+        "asar": true,
         "copyright":"Copyright © 2020",
         "compression": "maximum",// "store" | "normal"| "maximum" 打包压缩情况(store 相对较快)，
         /* "directories":{
@@ -40,25 +41,31 @@ module.exports = {
             "createStartMenuShortcut": true, // 创建开始菜单图标
             "shortcutName": "IMusic" // 图标名称
         },
-       
+       "mac":{
+        'icon': './public/icon.icns',
+        "category": "public.app-category.music",
+        "artifactName": "${productName}-${version}-${arch}.${ext}"
+       },
         'dmg': {
           'title': 'I Music',
-          'icon': './public/logo.ico',
+          "background": "./public/appdmg.png",
+          'icon': './public/icon.icns',
+          "iconSize":'100',
           'contents': [
             {
               'x': 110,
-              'y': 150
+              'y': 280
             },
             {
-              'x': 240,
-              'y': 150,
+              'x': 380,
+              'y': 280,
               'type': 'link',
               'path': '/Applications'
             }
           ],
           'window': {
-            'x': 400,
-            'y': 400
+            'x': 500,
+            'y': 520
           }
         }
       }
