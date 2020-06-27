@@ -40,7 +40,7 @@
                     <a-icon type="caret-down" />
                 </div>
             </div>
-            <div class="win-tool">
+            <div class="win-tool" v-if="os === 'win'">
                 <i class="ifont icon-minimum" @click="winToolClick('min')"></i>
                 <i class="ifont icon-maximize" @click="winToolClick('max')"></i>
                 <i class="ifont icon-close" @click="winToolClick('close')"></i>
@@ -116,6 +116,7 @@ export default {
     name: "HeaderBar",
     data() {
         return {
+            os:"win",//平台
             searchtext: "",
             loginVisible: false,
             formData: {
@@ -135,6 +136,13 @@ export default {
                 ]
             }
         };
+    },
+    created(){
+        // 针对Mac端的一些配置
+        console.info("平台:"+process.platform)
+        if (process.platform === "darwin") {
+            this.os = "mac"
+        }
     },
     mounted() {
         this.getLoginStatus();

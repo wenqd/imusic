@@ -11,7 +11,6 @@ Vue.config.productionTip = false;
 Vue.use(Antd);
 Vue.use(VXETable);
 import store from "./store/store"
-console.info("22222:"+store)
 new Vue({
     store,
     render: (h) => h(App),

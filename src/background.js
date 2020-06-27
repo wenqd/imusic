@@ -1,10 +1,60 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const MusicStore = require("./common/js/MusicDataStore");
 const myMusic = new MusicStore({ name: "iMusic" });
 /*隐藏electron创听的菜单栏*/
+let template = [
+    {
+        label: "文件",
+        submenu: [
+            {
+                label: "退出",
+                click: () => {
+                    console.log("我点击了退出");
+                    app.quit();
+                },
+            },
+        ],
+    },
+    {
+        label: "关于",
+        submenu: [
+            {
+                label: "关于我们",
+                click: () => {
+                    console.log("我点击了关于我们");
+                    dialog.showMessageBox({
+                        title: "关于我们",
+                        type: "info",
+                        detail:"by wenqd",
+                        message: "IMusic 音乐播放器 爱我所爱,听你想听",
+                    });
+                },
+            },
+            {
+                label: "开发者工具",
+                click: () => {
+                    console.log("我点击了开发者工具");
+                    win.webContents.openDevTools();
+                },
+            },
+            {
+                label: "刷新页面",
+                click: () => {
+                    console.log("我点击了刷新页面");
+                    win.reload()
+                },
+            },
+
+        ],
+    },
+];
+
+let m = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(m);
+
 import {
     createProtocol,
     /* installVueDevtools */
@@ -16,13 +66,17 @@ let win;
 protocol.registerSchemesAsPrivileged([
     { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
-
+// 针对Mac端的一些配置
+let isFrame = false;
+if (process.platform === "darwin") {
+    isFrame = true
+}
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
         width: 990,
         height: 700,
-        frame: false,
+        frame: isFrame,
         webPreferences: {
             nodeIntegration: true, //process.env.ELECTRON_NODE_INTEGRATION
         },
@@ -64,9 +118,7 @@ ipcMain.on("open-dialog", (event, msg) => {
     dialog
         .showOpenDialog({
             properties: ["openFile", "multiSelections"],
-            filters: [
-                { name: "Music", extensions: ["mp3", "WAV", "WMA", "flac"] },
-            ],
+            filters: [{ name: "Music", extensions: ["mp3", "WAV", "WMA", "flac"] }],
         })
         .then(function(tracks) {
             myMusic.addTracks(tracks.filePaths);
@@ -126,4 +178,5 @@ if (isDevelopment) {
         });
     }
 }
+
 require("./neteaseCloudMusic");
