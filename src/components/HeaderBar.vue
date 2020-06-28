@@ -168,7 +168,7 @@ export default {
                 this.$store.commit("musicstore/updateShowPanel", "search");
                 axios
                     .get(
-                        "http://127.0.0.1:8989/search?keywords=" +
+                        this.$store.state.musicstore.api+"/search?keywords=" +
                             this.searchtext,
                         {}
                     )
@@ -202,7 +202,7 @@ export default {
         //获取登陆状态
         getLoginStatus() {
             axios
-                .get("http://127.0.0.1:8989/login/status", {})
+                .get( this.$store.state.musicstore.api+"/login/status", {})
                 .then(res => {
                     console.log("登陆状态:", res);
                     if (res.data.code === 200) {
@@ -237,7 +237,7 @@ export default {
                 if (valid) {
                     axios
                         .get(
-                            "http://127.0.0.1:8989/login/cellphone?phone=" +
+                            this.$store.state.musicstore.api+"/login/cellphone?phone=" +
                                 this.formData.phone +
                                 "&password=" +
                                 this.formData.pwd +
@@ -277,7 +277,7 @@ export default {
         },
         logout() {
             axios
-                .get("http://127.0.0.1:8989/logout/", {})
+                .get(this.$store.state.musicstore.api+"/logout/", {})
                 .then(res => {
                     console.log("退出结果:", res);
                     if (res.data.code === 200) {
@@ -296,7 +296,7 @@ export default {
             let exp = new Date();
             let date = Math.round(exp.getTime() / 1000) + Days * 24 * 60 * 60;
             const cookie = {
-                url: "http://127.0.0.1:723",
+                url: this.$store.state.musicstore.api,
                 name: name,
                 value: value,
                 expirationDate: date

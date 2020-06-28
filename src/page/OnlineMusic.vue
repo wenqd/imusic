@@ -109,7 +109,7 @@ export default {
         },
         requetApi(idx) {
             axios
-                .get("http://127.0.0.1:8989/top/list?idx=" + idx, {})
+                .get(this.$store.state.musicstore.api+"/top/list?idx=" + idx, {})
                 .then(res => {
                     if (res.data.code === 200) {
                         this.topList["data_" + idx] = res.data.playlist.tracks;

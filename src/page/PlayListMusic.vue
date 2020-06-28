@@ -86,7 +86,7 @@ export default {
         getPlayDetail() {
             axios
                 .get(
-                    "http://127.0.0.1:8989/playlist/detail?id=" + this.playId,
+                    this.$store.state.musicstore.api+"/playlist/detail?id=" + this.playId,
                     {}
                 )
                 .then(res => {

@@ -192,7 +192,7 @@ export default {
                 // 读取本地文件
                 if (music.source === "neteaseCloud") {
                     axios
-                        .get("http://127.0.0.1:8989/song/url?id=" + music.id, {})
+                        .get(this.$store.state.musicstore.api+"/song/url?id=" + music.id, {})
                         .then((res) => {
                             console.log("数据是:", res);
                             if (res.data.code === 200) {

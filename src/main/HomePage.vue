@@ -140,7 +140,7 @@ export default {
                 this.$store.commit("musicstore/updateShowPanel", "net_paly_list");
                 axios
                     .get(
-                        "http://127.0.0.1:8989/playlist/detail?id=" +listId,
+                        this.$store.state.musicstore.api+"/playlist/detail?id=" +listId,
                         {}
                     )
                     .then(res => {
@@ -173,7 +173,7 @@ export default {
         },
         getPlayList(){
              axios
-                .get("http://127.0.0.1:8989/user/playlist?uid=" + this.$store.state.userstore.profile.userId, {})
+                .get(this.$store.state.musicstore.api+"/user/playlist?uid=" + this.$store.state.userstore.profile.userId, {})
                 .then(res => {
                     if (res.data.code === 200) {
                         this.playList = res.data.playlist
