@@ -83,6 +83,16 @@
                 :lazy="true"
                 @change="sliderChangeVolume"
             ></vue-slider>
+            <i
+                :class="{
+                    'playtype-icon': true,
+                    'ifont': true,
+                    'icon-danquxunhuan': playtype === 0,
+                    'icon-suiji': playtype === 2,
+                    'icon-shunxubofang': playtype === 1
+                }"
+                @click="playTypeChange"
+            ></i>
         </div>
         <div class="poster" v-show="posterShow">
             <poster-lyric
@@ -109,6 +119,7 @@ export default {
     data() {
         return {
             music: this.currMusic,
+            playtype:1,//播放模式  0:单曲循环  1 顺序播放  2 随机播放
             volume: 50, //音量
             posterShow: false //海报是否显示
         };
@@ -178,6 +189,10 @@ export default {
         volume(){
             //音量条件
             this.sliderChangeVolume(this.volume)
+        },
+        //播放模式
+        playtype(){
+
         }
     },
     mounted() {
@@ -226,16 +241,28 @@ export default {
                 }
             });
             let music = {};
-            if (type == "pre") {
-                if (index === 0) {
-                    index = this.allTracks.length;
-                }
-                music = this.allTracks[index - 1];
-            } else if (type == "next") {
-                if (index === this.allTracks.length - 1) {
-                    index = -1;
-                }
-                music = this.allTracks[index + 1];
+            switch (this.playtype) {
+                case 0://单曲循环
+                    music = this.allTracks[index];
+                    break;
+                case 1://顺序播放
+                    if (type == "pre") {
+                        if (index === 0) {
+                            index = this.allTracks.length;
+                        }
+                        music = this.allTracks[index - 1];
+                    } else if (type == "next") {
+                        if (index === this.allTracks.length - 1) {
+                            index = -1;
+                        }
+                        music = this.allTracks[index + 1];
+                    }
+                    break;
+                case 2://随机播放
+                    music = this.allTracks[this.random(0,this.allTracks.length-1)];
+                    break;
+                default:
+                    break;
             }
             this.$store.commit("musicstore/updateCurrMusic", music);
         },
@@ -312,9 +339,13 @@ export default {
                 musicAudio.duration * (value / 100)
             );
         },
-        //音量条件
+        //音量调节
         sliderChangeVolume(value, index) {
             musicAudio.volume = parseFloat(value / 100);
+        },
+        //播放模式修改
+        playTypeChange(){
+            this.playtype = (this.playtype + 1)%3
         },
         dragFormatter(val) {
             let times = parseFloat(musicAudio.duration * (val / 100));
@@ -344,6 +375,13 @@ export default {
             }
             t = t.substring(0, t.length - 3);
             return t;
+        },
+        //生成随机数
+        random(min,max){
+            var range = max - min;
+            var rand = Math.random();
+            var num = min + Math.round(rand * range);
+            return num;
         }
     }
 };
@@ -403,6 +441,10 @@ export default {
             margin: 2px 5px;
             width: 100px !important;
             box-sizing: initial;
+        }
+        .playtype-icon{
+            cursor: pointer;
+            margin-left: 10px;
         }
     }
     .audio-setting {
