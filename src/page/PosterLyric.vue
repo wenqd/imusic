@@ -5,7 +5,7 @@
         </div>
         <a-row>
             <a-col :span="12" class="img">
-                <img :src="img" alt="海报" />
+                <img :src="img" :class="{ Rotation: playStatus.isPlay }" alt="海报" />
             </a-col>
             <a-col :span="12" class="lyric">
                 <div>
@@ -215,7 +215,7 @@ export default {
             .lyric-content {
                 overflow: hidden;
                 margin: 20px 0;
-                height: calc(100% - 130px);
+                height: calc(100% - 150px);
                 ul {
                     list-style: none;
                     padding: 0;
@@ -229,6 +229,21 @@ export default {
                     }
                 }
             }
+        }
+        @-webkit-keyframes rotation {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        .Rotation {
+            -webkit-transform: rotate(360deg);
+            animation: rotation 35s linear infinite;
+            -moz-animation: rotation 35s linear infinite;
+            -webkit-animation: rotation 35s linear infinite;
+            -o-animation: rotation 35 linear infinite;
         }
     }
 }

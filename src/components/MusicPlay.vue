@@ -68,6 +68,21 @@
             <div class="end-time">
                 {{ playStatus.duration }}
             </div>
+            <i
+                :class="{
+                    'voleme-icon': true,
+                    'ifont': true,
+                    'icon-yinliang': volume !== 0,
+                    'icon-jingyin': volume === 0
+                }"
+                @click="volume===0?volume=50:volume=0"
+            ></i>
+            <vue-slider
+                class="volume"
+                v-model="volume"
+                :lazy="true"
+                @change="sliderChangeVolume"
+            ></vue-slider>
         </div>
         <div class="poster" v-show="posterShow">
             <poster-lyric
@@ -94,6 +109,7 @@ export default {
     data() {
         return {
             music: this.currMusic,
+            volume: 50, //音量
             posterShow: false //海报是否显示
         };
     },
@@ -158,6 +174,10 @@ export default {
             if (this.triggerShowPanel === "search") {
                 this.posterShow = false;
             }
+        },
+        volume(){
+            //音量条件
+            this.sliderChangeVolume(this.volume)
         }
     },
     mounted() {
@@ -205,7 +225,7 @@ export default {
                     index = k;
                 }
             });
-            let music = {}
+            let music = {};
             if (type == "pre") {
                 if (index === 0) {
                     index = this.allTracks.length;
@@ -215,13 +235,13 @@ export default {
                 if (index === this.allTracks.length - 1) {
                     index = -1;
                 }
-               music = this.allTracks[index + 1];
+                music = this.allTracks[index + 1];
             }
             this.$store.commit("musicstore/updateCurrMusic", music);
         },
         //读取音乐播放
         playMusic(music, bool) {
-            const v_this = this
+            const v_this = this;
             if (bool) {
                 //musicAudio.src = music.filePath;
                 //获取本地json文件文件的路径
@@ -265,6 +285,7 @@ export default {
                     musicAudio.play();
                 }
             }
+            musicAudio.volume = parseFloat(this.volume / 100);
             musicAudio.play();
             this.playStatus.isPlay = true;
         },
@@ -290,6 +311,10 @@ export default {
             musicAudio.currentTime = parseFloat(
                 musicAudio.duration * (value / 100)
             );
+        },
+        //音量条件
+        sliderChangeVolume(value, index) {
+            musicAudio.volume = parseFloat(value / 100);
         },
         dragFormatter(val) {
             let times = parseFloat(musicAudio.duration * (val / 100));
@@ -368,6 +393,15 @@ export default {
         .progress {
             flex: 1;
             margin: 2px 0;
+            box-sizing: initial;
+        }
+        .voleme-icon {
+            margin: 0 2px 0 15px;
+            cursor: pointer;
+        }
+        .volume {
+            margin: 2px 5px;
+            width: 100px !important;
             box-sizing: initial;
         }
     }
