@@ -14,7 +14,7 @@
                         :class="{
                             ifont: true,
                             'icon-1_music73': !playStatus.isPlay,
-                            'icon-1_music87': playStatus.isPlay,
+                            'icon-1_music87': playStatus.isPlay
                         }"
                         style="font-size: 40px;"
                         @click="playPause"
@@ -30,7 +30,7 @@
             </a-row>
         </div>
         <div class="audio-setting">
-            <div class="fengmian">
+            <div class="fengmian" @click="posterShow = !posterShow">
                 <img
                     :class="{ Rotation: playStatus.isPlay }"
                     :src="music.image || require('../assets/fengmian.png')"
@@ -41,7 +41,11 @@
                 <div class="title">
                     <a-tooltip placement="topLeft">
                         <template slot="title">
-                            {{ music.title || music.fileName || "请选择播放音乐" }}
+                            {{
+                                music.title ||
+                                    music.fileName ||
+                                    "请选择播放音乐"
+                            }}
                         </template>
                         {{ music.title || music.fileName || "请选择播放音乐" }}
                     </a-tooltip>
@@ -64,11 +68,19 @@
                 {{ playStatus.duration }}
             </div>
         </div>
+        <div class="poster" v-show="posterShow">
+            <poster-lyric
+                :img="music.image || require('../assets/fengmian.png')"
+                :music="music"
+                :playStatus="playStatus"
+            ></poster-lyric>
+        </div>
     </div>
 </template>
 
 <script>
 import VueSlider from "vue-slider-component";
+import PosterLyric from "../page/PosterLyric";
 import "vue-slider-component/theme/default.css";
 const fs = window.require("fs");
 const NodeID3 = require("node-id3");
@@ -79,18 +91,19 @@ export default {
     data() {
         return {
             music: this.currMusic,
+            posterShow: false //海报是否显示
         };
     },
-    components: { VueSlider },
+    components: { VueSlider, PosterLyric },
     props: {
         currMusic: {
             //当前音乐
             type: Object,
             default: () => {
                 return {
-                    fileName: "暂无正在播放的音乐...",
+                    fileName: "暂无正在播放的音乐..."
                 };
-            },
+            }
         },
         playStatus: {
             //是否播放状态
@@ -100,17 +113,19 @@ export default {
                     isPlay: false,
                     duration: "0:00",
                     currTime: "0:00",
-                    percent: 0, //百分比进度
+                    duration_def:'',
+                    currTime_def:'',
+                    percent: 0 //百分比进度
                 };
-            },
+            }
         },
         allTracks: {
             //所有音乐
             type: Array,
             default: () => {
                 return [];
-            },
-        },
+            }
+        }
     },
     watch: {
         music: {
@@ -126,11 +141,11 @@ export default {
                 }
                 this.$emit("change", newval);
             },
-            deep: true,
+            deep: true
         },
         currMusic(data) {
             this.music = data;
-        },
+        }
     },
     mounted() {
         const v_this = this;
@@ -138,12 +153,18 @@ export default {
             v_this.playStatus.duration = this.timeToMinute(musicAudio.duration);
         });
         musicAudio.addEventListener("timeupdate", () => {
-            v_this.playStatus.currTime = this.timeToMinute(musicAudio.currentTime);
+            v_this.playStatus.duration_def =  musicAudio.duration
+            v_this.playStatus.currTime_def =  musicAudio.currentTime
+            v_this.playStatus.currTime = this.timeToMinute(
+                musicAudio.currentTime
+            );
             if (v_this.playStatus.currTime === v_this.playStatus.duration) {
                 //v_this.playStatus.isPlay=false
                 this.changeMusic("next");
             }
-            let value = parseInt((musicAudio.currentTime / musicAudio.duration) * 100);
+            let value = parseInt(
+                (musicAudio.currentTime / musicAudio.duration) * 100
+            );
             if (!isNaN(value)) {
                 v_this.playStatus.percent = value;
             }
@@ -192,15 +213,22 @@ export default {
                 // 读取本地文件
                 if (music.source === "neteaseCloud") {
                     axios
-                        .get(this.$store.state.musicstore.api+"/song/url?id=" + music.id, {})
-                        .then((res) => {
+                        .get(
+                            this.$store.state.musicstore.api +
+                                "/song/url?id=" +
+                                music.id,
+                            {}
+                        )
+                        .then(res => {
                             console.log("数据是:", res);
                             if (res.data.code === 200) {
-                                musicAudio.src = this.getOnlineUrl(res.data.data);
+                                musicAudio.src = this.getOnlineUrl(
+                                    res.data.data
+                                );
                                 musicAudio.play();
                             }
                         })
-                        .catch((e) => {
+                        .catch(e => {
                             console.log(e);
                         });
                 } else {
@@ -233,7 +261,9 @@ export default {
         },
         //快进
         sliderChange(value, index) {
-            musicAudio.currentTime = parseFloat(musicAudio.duration * (value / 100));
+            musicAudio.currentTime = parseFloat(
+                musicAudio.duration * (value / 100)
+            );
         },
         dragFormatter(val) {
             let times = parseFloat(musicAudio.duration * (val / 100));
@@ -263,8 +293,8 @@ export default {
             }
             t = t.substring(0, t.length - 3);
             return t;
-        },
-    },
+        }
+    }
 };
 </script>
 
@@ -330,6 +360,7 @@ export default {
             line-height: 60px;
             width: 35px;
             margin-right: 10px;
+            cursor: pointer;
             img {
                 width: 33px;
                 height: 33px;
@@ -362,6 +393,14 @@ export default {
             -webkit-animation: rotation 5s linear infinite;
             -o-animation: rotation 5 linear infinite;
         }
+    }
+    .poster {
+        width: 100%;
+        position: fixed;
+        top: 50px;
+        background-color: #eaeaea;
+        z-index: 99;
+        height: calc(100% - 111px);
     }
 }
 </style>

@@ -4,56 +4,59 @@ import { app, protocol, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const MusicStore = require("./common/js/MusicDataStore");
 const myMusic = new MusicStore({ name: "iMusic" });
-/*隐藏electron创听的菜单栏*/
-let template = [
-    {
-        label: "文件",
-        submenu: [
-            {
-                label: "退出",
-                click: () => {
-                    console.log("我点击了退出");
-                    app.quit();
+/*隐藏electron创建的菜单栏*/
+console.info("平台:"+process.platform)
+if (process.platform === "darwin") {
+    let template = [
+        {
+            label: "文件",
+            submenu: [
+                {
+                    label: "退出",
+                    click: () => {
+                        console.log("我点击了退出");
+                        app.quit();
+                    },
                 },
-            },
-        ],
-    },
-    {
-        label: "关于",
-        submenu: [
-            {
-                label: "关于我们",
-                click: () => {
-                    console.log("我点击了关于我们");
-                    dialog.showMessageBox({
-                        title: "关于我们",
-                        type: "info",
-                        detail:"by wenqd",
-                        message: "IMusic 音乐播放器 爱我所爱,听你想听",
-                    });
+            ],
+        },
+        {
+            label: "关于",
+            submenu: [
+                {
+                    label: "关于我们",
+                    click: () => {
+                        console.log("我点击了关于我们");
+                        dialog.showMessageBox({
+                            title: "关于我们",
+                            type: "info",
+                            detail:"by wenqd",
+                            message: "IMusic 音乐播放器 爱我所爱,听你想听",
+                        });
+                    },
                 },
-            },
-            {
-                label: "开发者工具",
-                click: () => {
-                    console.log("我点击了开发者工具");
-                    win.webContents.openDevTools();
+                {
+                    label: "开发者工具",
+                    click: () => {
+                        console.log("我点击了开发者工具");
+                        win.webContents.openDevTools();
+                    },
                 },
-            },
-            {
-                label: "刷新页面",
-                click: () => {
-                    console.log("我点击了刷新页面");
-                    win.reload()
+                {
+                    label: "刷新页面",
+                    click: () => {
+                        console.log("我点击了刷新页面");
+                        win.reload()
+                    },
                 },
-            },
-
-        ],
-    },
-];
-
-let m = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(m);
+    
+            ],
+        },
+    ];
+    
+    let m = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(m);
+}
 
 import {
     createProtocol,
@@ -144,9 +147,12 @@ app.on("ready", async () => {
     win.webContents.on("did-finish-load", () => {
         win.send("getTracks", myMusic.getTracks());
     });
-    installExtension(VUEJS_DEVTOOLS)
+    /* installExtension(VUEJS_DEVTOOLS)
         .then((name) => console.log(`Added Extension:  ${name}`))
-        .catch((err) => console.log("An error occurred: ", err));
+        .catch((err) => console.log("An error occurred: ", err)); */
+        setTimeout(()=>{
+            BrowserWindow.addDevToolsExtension('C:/Users/wen/AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.3.3_0');
+        },500)
 });
 //接收最小化命令
 ipcMain.on("window-min", function() {

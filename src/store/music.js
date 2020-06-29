@@ -15,7 +15,7 @@ const musicstore = {
             songs: [],
         },
         playList:[],//歌单列表
-        showPanel: "local", //显示的面板
+        showPanel: "online", //显示的面板
     },
     mutations: {
         updateCurrMusic(state, music) {

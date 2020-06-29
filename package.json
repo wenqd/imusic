@@ -18,8 +18,10 @@
   ],
   "main": "background.js",
   "dependencies": {
+    "@better-scroll/core": "^2.0.0-beta.10",
     "axios": "^0.19.2",
     "express": "^4.17.1",
+    "lyric-parser": "^1.0.1",
     "pac-proxy-agent": "^3.0.1",
     "request": "^2.88.0",
     "vuex": "^3.4.0"
