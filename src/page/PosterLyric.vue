@@ -1,5 +1,8 @@
 <template>
     <div class="poster" :data-img="img" :style="div_before">
+        <div class="close" @click="hidePoster">
+            <i class="ifont icon-suoxiao"></i>
+        </div>
         <a-row>
             <a-col :span="12" class="img">
                 <img :src="img" alt="海报" />
@@ -34,7 +37,7 @@
 </template>
 <script>
 import BScroll from "@better-scroll/core";
-import Lyric from "lyric-parser";
+import Lyric from "lyric-parser/src/index";
 const axios = require("axios");
 let lyric_c = null;
 export default {
@@ -54,7 +57,7 @@ export default {
                 return "";
             }
         },
-        music: {
+        currMusic: {
             //当前音乐
             type: Object,
             default: () => {
@@ -75,6 +78,9 @@ export default {
         }
     },
     computed: {
+        music:function(){
+            return this.currMusic;
+        },
         div_before: function() {
             return {
                 "--background": "#d5d6d5 url(" + this.img + ") no-repeat center"
@@ -86,14 +92,17 @@ export default {
         }
     },
     watch: {
-        music: function() {
-            this.getLyric(this.music.id);
+        music: {
+            handler(newval, oldval) {
+                this.getLyric(newval.id);
+            },
+            deep: true
         },
         plays: {
             handler(newval, oldval) {
                 if (lyric_c !== null) {
                     lyric_c.seek(newval.currTime_def * 1000);
-                    if(!newval.isPlay){
+                    if (!newval.isPlay) {
                         lyric_c.togglePlay();
                     }
                 }
@@ -107,16 +116,18 @@ export default {
             deep: true
         }
     },
-    created() {},
+    created() {
+        this.getLyric(this.music.id);
+    },
     methods: {
         getLyric(id) {
             if (lyric_c !== null) {
                 lyric_c.stop();
-                lyric_c = null
+                lyric_c = null;
             }
             if (this.music.source !== "neteaseCloud") {
                 //本地音乐不加载歌词
-                this.lyric = [{txt:"暂无歌词"}];
+                this.lyric = [{ txt: "暂无歌词" }];
                 return;
             }
             const v_this = this;
@@ -158,6 +169,10 @@ export default {
                 this.scroll.scrollToElement("#lyric-item-0", 0, 1000);
                 this.scroll.refresh();
             }
+        },
+        //隐藏歌词海报
+        hidePoster() {
+            this.$emit("hidePoster", {});
         }
     }
 };
@@ -165,6 +180,16 @@ export default {
 <style lang="scss" scoped>
 .poster {
     overflow: hidden;
+    .close {
+        cursor: pointer;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 9;
+        i {
+            font-size: 28px;
+        }
+    }
     .ant-row {
         height: 100%;
         .img {
@@ -195,11 +220,11 @@ export default {
                     list-style: none;
                     padding: 0;
                     font-size: 16px;
-                    li{
+                    li {
                         margin: 10px 0;
                     }
                     .current {
-                        color: #FFF;
+                        color: #fff;
                         font-size: 20px;
                     }
                 }

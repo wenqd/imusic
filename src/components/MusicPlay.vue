@@ -34,7 +34,8 @@
                 <img
                     :class="{ Rotation: playStatus.isPlay }"
                     :src="music.image || require('../assets/fengmian.png')"
-                    alt="专辑图片"
+                    alt="查看歌词"
+                    title="查看海报-歌词"
                 />
             </div>
             <div class="info">
@@ -70,9 +71,11 @@
         </div>
         <div class="poster" v-show="posterShow">
             <poster-lyric
+                :key="music.id"
                 :img="music.image || require('../assets/fengmian.png')"
-                :music="music"
+                :currMusic="music"
                 :playStatus="playStatus"
+                @hidePoster="posterShow = false"
             ></poster-lyric>
         </div>
     </div>
@@ -113,8 +116,8 @@ export default {
                     isPlay: false,
                     duration: "0:00",
                     currTime: "0:00",
-                    duration_def:'',
-                    currTime_def:'',
+                    duration_def: "",
+                    currTime_def: "",
                     percent: 0 //百分比进度
                 };
             }
@@ -125,6 +128,11 @@ export default {
             default: () => {
                 return [];
             }
+        }
+    },
+    computed: {
+        triggerShowPanel() {
+            return this.$store.state.musicstore.showPanel;
         }
     },
     watch: {
@@ -145,6 +153,11 @@ export default {
         },
         currMusic(data) {
             this.music = data;
+        },
+        triggerShowPanel() {
+            if (this.triggerShowPanel === "search") {
+                this.posterShow = false;
+            }
         }
     },
     mounted() {
@@ -153,8 +166,8 @@ export default {
             v_this.playStatus.duration = this.timeToMinute(musicAudio.duration);
         });
         musicAudio.addEventListener("timeupdate", () => {
-            v_this.playStatus.duration_def =  musicAudio.duration
-            v_this.playStatus.currTime_def =  musicAudio.currentTime
+            v_this.playStatus.duration_def = musicAudio.duration;
+            v_this.playStatus.currTime_def = musicAudio.currentTime;
             v_this.playStatus.currTime = this.timeToMinute(
                 musicAudio.currentTime
             );
@@ -192,21 +205,23 @@ export default {
                     index = k;
                 }
             });
+            let music = {}
             if (type == "pre") {
                 if (index === 0) {
                     index = this.allTracks.length;
                 }
-                this.music = this.allTracks[index - 1];
+                music = this.allTracks[index - 1];
             } else if (type == "next") {
                 if (index === this.allTracks.length - 1) {
                     index = -1;
                 }
-                this.music = this.allTracks[index + 1];
+               music = this.allTracks[index + 1];
             }
-            this.$store.commit("musicstore/updateCurrMusic", this.music);
+            this.$store.commit("musicstore/updateCurrMusic", music);
         },
         //读取音乐播放
         playMusic(music, bool) {
+            const v_this = this
             if (bool) {
                 //musicAudio.src = music.filePath;
                 //获取本地json文件文件的路径
@@ -222,10 +237,21 @@ export default {
                         .then(res => {
                             console.log("数据是:", res);
                             if (res.data.code === 200) {
-                                musicAudio.src = this.getOnlineUrl(
+                                let onlineUrl = this.getOnlineUrl(
                                     res.data.data
                                 );
-                                musicAudio.play();
+                                if (onlineUrl == null) {
+                                    this.$message.info(
+                                        "当前歌曲需要VIP，2s后切换到下一首!"
+                                    );
+                                    setTimeout(function() {
+                                        //切换音乐
+                                        v_this.changeMusic("next");
+                                    }, 2000);
+                                } else {
+                                    musicAudio.src = onlineUrl;
+                                    musicAudio.play();
+                                }
                             }
                         })
                         .catch(e => {

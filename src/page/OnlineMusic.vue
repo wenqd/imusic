@@ -14,7 +14,7 @@
                                         :key="index"
                                         :music-id="item.id"
                                         class="item"
-                                        @dblclick.native="playMusic(item.id)"
+                                        @dblclick.native="playMusic(item.id,'data_1')"
                                     >
                                         <a-col :span="3">{{ index + 1 }}</a-col>
                                         <a-col :span="13" class="name">{{
@@ -37,7 +37,7 @@
                                         :key="index"
                                         :music-id="item.id"
                                         class="item"
-                                        @dblclick.native="playMusic(item.id)"
+                                        @dblclick.native="playMusic(item.id,'data_0')"
                                     >
                                         <a-col :span="3">{{ index + 1 }}</a-col>
                                         <a-col :span="13" class="name">{{
@@ -60,7 +60,7 @@
                                         :key="index"
                                         :music-id="item.id"
                                         class="item"
-                                        @dblclick.native="playMusic(item.id)"
+                                        @dblclick.native="playMusic(item.id,'data_2')"
                                     >
                                         <a-col :span="3">{{ index + 1 }}</a-col>
                                         <a-col :span="13" class="name">{{
@@ -120,11 +120,22 @@ export default {
                 });
         },
         //播放音乐
-        playMusic(id) {
+        playMusic(id,idx) {
             this.$store.commit("musicstore/updateCurrMusic", {
                 id,
                 source: "neteaseCloud"
             });
+            this.changeAllTracks(idx);
+        },
+        changeAllTracks(idx){
+            let tracks = this.topList[idx].map((item)=>{
+                let track = {
+                    id:item.id,
+                    source :"neteaseCloud"
+                }
+                return track
+            })
+             this.$store.commit("musicstore/updateAllTracks", tracks)
         }
     }
 };
