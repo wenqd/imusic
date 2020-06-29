@@ -231,8 +231,11 @@ export default {
                 }
             }
         },
-        //切换音乐
-        changeMusic(type) {
+        //切换音乐,step:向后播放第几首
+        changeMusic(type,tempPlayType) {
+            /*  start 当单曲循环时，遇到vip歌曲强制调到下一首 */
+            tempPlayType  = this.playtype===0?tempPlayType || this.playtype:tempPlayType = this.playtype
+            /**end */
             const v_this = this;
             let index = 0;
             this.allTracks.map((item, k) => {
@@ -241,7 +244,7 @@ export default {
                 }
             });
             let music = {};
-            switch (this.playtype) {
+            switch (tempPlayType) {
                 case 0://单曲循环
                     music = this.allTracks[index];
                     break;
@@ -262,6 +265,17 @@ export default {
                     music = this.allTracks[this.random(0,this.allTracks.length-1)];
                     break;
                 default:
+                    if (type == "pre") {
+                        if (index === 0) {
+                            index = this.allTracks.length;
+                        }
+                        music = this.allTracks[index - 1];
+                    } else if (type == "next") {
+                        if (index === this.allTracks.length - 1) {
+                            index = -1;
+                        }
+                        music = this.allTracks[index + 1];
+                    }
                     break;
             }
             this.$store.commit("musicstore/updateCurrMusic", music);
@@ -293,7 +307,7 @@ export default {
                                     );
                                     setTimeout(function() {
                                         //切换音乐
-                                        v_this.changeMusic("next");
+                                        v_this.changeMusic("next",-1);
                                     }, 2000);
                                 } else {
                                     musicAudio.src = onlineUrl;
