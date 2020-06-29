@@ -425,7 +425,6 @@ export default {
         position: fixed;
         top: 50px;
         background-color: #eaeaea;
-        z-index: 99;
         height: calc(100% - 111px);
     }
 }
