@@ -202,7 +202,7 @@ export default {
         //获取登陆状态
         getLoginStatus() {
             axios
-                .get( this.$store.state.musicstore.api+"/login/status", {})
+                .get( this.$store.state.musicstore.api+"/login/status?timestamp="+new Date().getTime(), {})
                 .then(res => {
                     console.log("登陆状态:", res);
                     if (res.data.code === 200) {
@@ -277,7 +277,7 @@ export default {
         },
         logout() {
             axios
-                .get(this.$store.state.musicstore.api+"/logout/", {})
+                .get(this.$store.state.musicstore.api+"/logout/?timestamp="+new Date().getTime(), {})
                 .then(res => {
                     console.log("退出结果:", res);
                     if (res.data.code === 200) {

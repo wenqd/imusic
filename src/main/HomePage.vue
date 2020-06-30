@@ -8,7 +8,7 @@
                 <div class="group-list">
                     <a-menu
                         class="menu"
-                        :openKeys="['sub1', 'sub2','sub3']"
+                        :openKeys="['sub1', 'sub2', 'sub3']"
                         :default-selected-keys="['1']"
                         :open-keys.sync="openKeys"
                         mode="inline"
@@ -43,9 +43,11 @@
                             disabled
                         >
                             <span slot="title"><span>创建的歌单</span></span>
-                            <template v-for="(list) in  playList">
-                                <a-menu-item :key="'net_paly_list$'+list.id">
-                                    <i class="ifont icon-playlist" />{{list.name}}
+                            <template v-for="list in playList">
+                                <a-menu-item :key="'net_paly_list$' + list.id">
+                                    <i class="ifont icon-playlist" />{{
+                                        list.name
+                                    }}
                                 </a-menu-item>
                             </template>
                         </a-sub-menu>
@@ -63,7 +65,11 @@
                         v-if="$store.state.musicstore.showPanel === 'online'"
                     ></online-music>
                     <play-list-music
-                        v-if="$store.state.musicstore.showPanel.indexOf('net_paly_list')>-1"
+                        v-if="
+                            $store.state.musicstore.showPanel.indexOf(
+                                'net_paly_list'
+                            ) > -1
+                        "
                         :playId="current"
                         :key="current"
                     ></play-list-music>
@@ -103,44 +109,56 @@ export default {
             current: ["mail"],
             openKeys: ["sub1"],
             clickNum: 0,
-            playList:[]
+            playList: []
         };
     },
-    components: { HeaderBar, MusicPlay, LocalMusic, SearchMusic, OnlineMusic ,PlayListMusic},
-    computed:{
-        profile(){
-            return this.$store.state.userstore.profile
+    components: {
+        HeaderBar,
+        MusicPlay,
+        LocalMusic,
+        SearchMusic,
+        OnlineMusic,
+        PlayListMusic
+    },
+    computed: {
+        profile() {
+            return this.$store.state.userstore.profile;
         }
     },
     watch: {
-        profile(){
-             this.getPlayList()//获取歌单
+        profile() {
+            this.getPlayList(); //获取歌单
         }
     },
-    mounted(){
-        const v_this = this
-        setTimeout(function(){
-            v_this.getPlayList()//获取歌单
-        },1000)
+    mounted() {
+        const v_this = this;
+        setTimeout(function() {
+            v_this.getPlayList(); //获取歌单
+        }, 1000);
     },
     methods: {
         handleClick(e) {
             this.$store.commit("musicstore/updateShowPanel", e.key);
-            let  arr = e.key.split("$")
-            if(arr.length>1){
-                const listId = arr[1]
-                this.getMusicList(listId)
-                this.current = listId
-                return
+            let arr = e.key.split("$");
+            if (arr.length > 1) {
+                const listId = arr[1];
+                this.getMusicList(listId);
+                this.current = listId;
+                return;
             }
-            this.current = e.key
+            this.current = e.key;
         },
         getMusicList(listId) {
             if (listId) {
-                this.$store.commit("musicstore/updateShowPanel", "net_paly_list");
+                this.$store.commit(
+                    "musicstore/updateShowPanel",
+                    "net_paly_list"
+                );
                 axios
                     .get(
-                        this.$store.state.musicstore.api+"/playlist/detail?id=" +listId,
+                        this.$store.state.musicstore.api +
+                            "/playlist/detail?id=" +
+                            listId,
                         {}
                     )
                     .then(res => {
@@ -171,18 +189,30 @@ export default {
         titleClick(e) {
             console.log("titleClick", e);
         },
-        getPlayList(){
-             axios
-                .get(this.$store.state.musicstore.api+"/user/playlist?uid=" + this.$store.state.userstore.profile.userId, {})
-                .then(res => {
-                    if (res.data.code === 200) {
-                        this.playList = res.data.playlist
-                        this.$store.commit("musicstore/updatePlayList", this.playList);
-                    }
-                })
-                .catch(e => {
-                    console.log(e);
-                });
+        getPlayList() {
+            if (this.$store.state.userstore.profile.userId !== undefined) {
+                axios
+                    .get(
+                        this.$store.state.musicstore.api +
+                            "/user/playlist?uid=" +
+                            this.$store.state.userstore.profile.userId,
+                        {}
+                    )
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.playList = res.data.playlist;
+                            this.$store.commit(
+                                "musicstore/updatePlayList",
+                                this.playList
+                            );
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    });
+            }else{
+                this.playList = []
+            }
         }
     }
 };
@@ -242,7 +272,8 @@ export default {
 .ant-menu-submenu-title [role="menuitem"] {
     padding: 0 15px !important;
 }
-.group-list /deep/ .ant-menu-sub.ant-menu-inline > .ant-menu-item, .ant-menu-sub.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title{
+.group-list /deep/ .ant-menu-sub.ant-menu-inline > .ant-menu-item,
+.ant-menu-sub.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
     height: 30px;
     line-height: 30px;
     font-size: 11px;
