@@ -120,7 +120,7 @@ export default {
         return {
             music: this.currMusic,
             playtype:1,//播放模式  0:单曲循环  1 顺序播放  2 随机播放
-            volume: 50, //音量
+            volume: 80, //音量
             posterShow: false //海报是否显示
         };
     },
