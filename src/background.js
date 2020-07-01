@@ -1,7 +1,8 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain, dialog, Menu } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog, Menu,Tray } from "electron";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import path from 'path'
 const MusicStore = require("./common/js/MusicDataStore");
 const myMusic = new MusicStore({ name: "iMusic" });
 /*隐藏electron创建的菜单栏*/
@@ -144,6 +145,7 @@ app.on("ready", async () => {
         //
     }
     createWindow();
+    setTray();//创建托盘
     win.webContents.on("did-finish-load", () => {
         win.send("getTracks", myMusic.getTracks());
     });
@@ -170,6 +172,10 @@ ipcMain.on("window-max", function() {
 ipcMain.on("window-close", function() {
     win.close();
 });
+//接收隐藏任务栏命令
+ipcMain.on("window-hide", function() {
+    win.hide()
+});
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
     if (process.platform === "win32") {
@@ -184,5 +190,32 @@ if (isDevelopment) {
         });
     }
 }
-
+let appTray = null;   // 引用放外部，防止被当垃圾回收
+// 隐藏主窗口，并创建托盘，绑定关闭事件
+function setTray () {
+    //  ，通常被添加到一个 context menu 上.
+    // 系统托盘右键菜单
+    let trayMenuTemplate = [{     // 系统托盘图标目录
+        label: '退出',
+        click: function () {
+            app.quit();
+        }
+    }];
+    // 当前目录下的app.ico图标
+    let iconPath = path.join(__dirname, '../public/logo.ico');
+    appTray = new Tray(iconPath);
+    // 图标的上下文菜单
+    const contextMenu = Menu.buildFromTemplate(trayMenuTemplate);
+    // 设置托盘悬浮提示
+    appTray.setToolTip('爱我所爱 听你想听');
+    // 设置托盘菜单
+    appTray.setContextMenu(contextMenu);
+    // 单击托盘小图标显示应用
+    appTray.on('click', function(){
+        // 显示主程序
+        win.show();
+        // 关闭托盘显示
+        //appTray.destroy();
+    });
+}
 require("./neteaseCloudMusic");

@@ -41,9 +41,10 @@
                 </div>
             </div>
             <div class="win-tool" v-if="os === 'win'">
-                <i class="ifont icon-minimum" @click="winToolClick('min')"></i>
-                <i class="ifont icon-maximize" @click="winToolClick('max')"></i>
-                <i class="ifont icon-close" @click="winToolClick('close')"></i>
+                <i class="ifont icon-gongjulan" title="最小化到任务栏" @click="winToolClick('hide')"></i>
+                <i class="ifont icon-minimum" title="最小化" @click="winToolClick('min')"></i>
+                <i class="ifont icon-maximize" title="缩放" @click="winToolClick('max')"></i>
+                <i class="ifont icon-close" title="退出" @click="winToolClick('close')"></i>
             </div>
         </div>
         <a-modal
@@ -161,6 +162,10 @@ export default {
             if (type === "close") {
                 //发送最小化命令
                 ipcRenderer.send("window-close");
+            }
+            if (type === "hide") {
+                //发送最小化命令
+                ipcRenderer.send("window-hide");
             }
         },
         searchMusic() {
@@ -391,7 +396,7 @@ export default {
             }
         }
         .win-tool {
-            width: 85px;
+            width: 95px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;

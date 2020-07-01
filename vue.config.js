@@ -9,7 +9,7 @@ module.exports = {
     },
     electronBuilder: {
       "builderOptions": {
-        "appId": "wenqd.github.io",
+        "appId": "wenqindong.github.io",
         "productName":"IMusic",
         "asar": true,
         "copyright":"Copyright © 2020",
@@ -17,6 +17,12 @@ module.exports = {
         /* "directories":{
             "output":"./dist"
         }, */
+        "extraResources": [
+            {
+                "from": "public/logo.ico", 
+                "to": "public/logo.ico"
+            } // 可以移动多个文件夹，from-to
+        ], 
         "win":{
             "icon":"./public/logo.ico",
             "target": [
