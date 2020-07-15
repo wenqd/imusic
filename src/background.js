@@ -64,6 +64,7 @@ import {
     /* installVueDevtools */
 } from "vue-cli-plugin-electron-builder/lib";
 const isDevelopment = process.env.NODE_ENV !== "production";
+console.log("环境："+process.env)
 
 let win;
 
