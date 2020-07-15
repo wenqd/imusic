@@ -58,13 +58,16 @@
             <div class="start-time">
                 {{ playStatus.currTime }}
             </div>
-            <vue-slider
-                class="progress"
-                v-model="playStatus.percent"
-                :tooltip-formatter="dragFormatter"
-                :lazy="true"
-                @change="sliderChange"
-            ></vue-slider>
+            <div class="progress">
+                <vue-slider
+                    v-model="playStatus.percent"
+                    :tooltip-formatter="dragFormatter"
+                    :lazy="true"
+                    @change="sliderChange"
+                ></vue-slider>
+                <div class="lyric">{{currTimeLyric}}</div>
+
+            </div>
             <div class="end-time">
                 {{ playStatus.duration }}
             </div>
@@ -101,6 +104,7 @@
                 :currMusic="music"
                 :playStatus="playStatus"
                 @hidePoster="posterShow = false"
+                @currTimeLyric="currTimeLyricEvent"
             ></poster-lyric>
         </div>
     </div>
@@ -121,7 +125,8 @@ export default {
             music: this.currMusic,
             playtype:1,//播放模式  0:单曲循环  1 顺序播放  2 随机播放
             volume: 80, //音量
-            posterShow: false //海报是否显示
+            posterShow: false, //海报是否显示
+            currTimeLyric:"",//当前时间歌词
         };
     },
     components: { VueSlider, PosterLyric },
@@ -365,6 +370,10 @@ export default {
             let times = parseFloat(musicAudio.duration * (val / 100));
             return this.timeToMinute(times);
         },
+        //实时歌词
+        currTimeLyricEvent(txt){
+            this.currTimeLyric = txt
+        },
         // 秒转换分钟00:00:00格式
         timeToMinute(times) {
             var t = "";
@@ -445,7 +454,14 @@ export default {
         .progress {
             flex: 1;
             margin: 2px 0;
-            box-sizing: initial;
+            .vue-slider{
+                box-sizing: initial;
+            }
+            .lyric{
+                text-align: center;
+                font-size: 12px;
+                box-sizing: initial;
+            }
         }
         .voleme-icon {
             margin: 0 2px 0 15px;

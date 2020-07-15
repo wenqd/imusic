@@ -154,6 +154,7 @@ export default {
                 });
         },
         handleLyric({ lineNum, txt }) {
+            this.$emit("currTimeLyric",txt)
             this.currentNum = lineNum;
             console.info("line:" + lineNum);
             // 若当前行大于5,开始滚动,以保歌词显示于中间位置
