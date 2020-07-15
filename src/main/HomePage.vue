@@ -33,8 +33,8 @@
                             <a-menu-item key="online">
                                 <i class="ifont icon-bangdan" />热门榜单
                             </a-menu-item>
-                            <a-menu-item key="5">
-                                <i class="ifont icon-top" />Top 50
+                            <a-menu-item key="hotmv">
+                                <i class="ifont icon-top" />热门MV
                             </a-menu-item>
                         </a-sub-menu>
                         <a-sub-menu
@@ -64,6 +64,9 @@
                     <online-music
                         v-if="$store.state.musicstore.showPanel === 'online'"
                     ></online-music>
+                    <hot-mv
+                        v-if="$store.state.musicstore.showPanel === 'hotmv'"
+                    ></hot-mv>
                     <play-list-music
                         v-if="
                             $store.state.musicstore.showPanel.indexOf(
@@ -102,6 +105,7 @@ import LocalMusic from "../page/LocalMusic";
 import SearchMusic from "../page/SearchMusic";
 import OnlineMusic from "../page/OnlineMusic";
 import PlayListMusic from "../page/PlayListMusic";
+import HotMv from "../page/HotMv";
 const axios = require("axios");
 export default {
     data() {
@@ -118,7 +122,8 @@ export default {
         LocalMusic,
         SearchMusic,
         OnlineMusic,
-        PlayListMusic
+        PlayListMusic,
+        HotMv
     },
     computed: {
         profile() {

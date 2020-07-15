@@ -25,6 +25,7 @@
     "lyric-parser": "git+https://github.com/Palereed/lyric-parser.git",
     "pac-proxy-agent": "^3.0.1",
     "request": "^2.88.0",
+    "vue-infinite-loading": "^2.4.5",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
