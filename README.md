@@ -46,7 +46,11 @@ vuex
   
 
 ```
-const&nbsp;fs&nbsp;=&nbsp;window.require("fs");&nbsp;let&nbsp;musicAudio&nbsp;=&nbsp;new&nbsp;Audio();&nbsp;let&nbsp;data&nbsp;=&nbsp;fs.readFileSync(music.filePath);&nbsp;let&nbsp;musicBlob&nbsp;=&nbsp;new&nbsp;Blob(\[data\],&nbsp;{&nbsp;type:&nbsp;"audio/x-mpeg"&nbsp;});&nbsp;musicAudio.src&nbsp;=&nbsp;URL.createObjectURL(musicBlob);
+const fs = window.require("fs");
+let musicAudio = new Audio();
+let data = fs.readFileSync(music.filePath);
+let musicBlob = new Blob([data], { type: "audio/x-mpeg" });
+musicAudio.src = URL.createObjectURL(musicBlob);
 ```
 
   
@@ -71,7 +75,58 @@ const&nbsp;fs&nbsp;=&nbsp;window.require("fs");&nbsp;let&nbsp;musicAudio&nbsp;=&
   
 
 ```
-"win":{&nbsp;"icon":"./public/logo.ico",&nbsp;"target":&nbsp;\[&nbsp;{&nbsp;"target":&nbsp;"nsis",&nbsp;"arch":&nbsp;\[&nbsp;/*&nbsp;"x64",&nbsp;*/&nbsp;"ia32"&nbsp;\]&nbsp;}&nbsp;\]&nbsp;},&nbsp;"nsis":&nbsp;{&nbsp;"oneClick":&nbsp;false,&nbsp;//&nbsp;一键安装&nbsp;"perMachine":&nbsp;true,&nbsp;//&nbsp;是否开启安装时权限限制（此电脑或当前用户）&nbsp;"allowElevation":&nbsp;true,&nbsp;//&nbsp;允许请求提升。&nbsp;如果为false，则用户必须使用提升的权限重新启动安装程序。&nbsp;"allowToChangeInstallationDirectory":&nbsp;true,&nbsp;//&nbsp;允许修改安装目录&nbsp;"installerIcon":&nbsp;"./public/logo.ico",&nbsp;//&nbsp;安装图标&nbsp;"uninstallerIcon":&nbsp;"./public/logo.ico",&nbsp;//卸载图标&nbsp;"installerHeaderIcon":&nbsp;"./public/logo.ico",&nbsp;//&nbsp;安装时头部图标&nbsp;"createDesktopShortcut":&nbsp;true,&nbsp;//&nbsp;创建桌面图标&nbsp;"createStartMenuShortcut":&nbsp;true,&nbsp;//&nbsp;创建开始菜单图标&nbsp;"shortcutName":&nbsp;"IMusic"&nbsp;//&nbsp;图标名称&nbsp;},&nbsp;"mac":{&nbsp;'icon':&nbsp;'./public/icon.icns',&nbsp;"category":&nbsp;"public.app-category.music",&nbsp;"artifactName":&nbsp;"${productName}-${version}-${arch}.${ext}"&nbsp;},&nbsp;'dmg':&nbsp;{&nbsp;'title':&nbsp;'I&nbsp;Music',&nbsp;"background":&nbsp;"./public/appdmg.png",&nbsp;'icon':&nbsp;'./public/icon.icns',&nbsp;"iconSize":'100',&nbsp;'contents':&nbsp;\[&nbsp;{&nbsp;&nbsp;&nbsp;'x':&nbsp;110,&nbsp;&nbsp;&nbsp;'y':&nbsp;280&nbsp;},&nbsp;{&nbsp;&nbsp;&nbsp;'x':&nbsp;380,&nbsp;&nbsp;&nbsp;'y':&nbsp;280,&nbsp;&nbsp;&nbsp;'type':&nbsp;'link',&nbsp;&nbsp;&nbsp;'path':&nbsp;'/Applications'&nbsp;}&nbsp;\],&nbsp;'window':&nbsp;{&nbsp;'x':&nbsp;500,&nbsp;'y':&nbsp;520&nbsp;}&nbsp;}&nbsp;}
+"win":{
+	"icon":"./public/logo.ico",
+	"target": [
+		{
+			"target": "nsis",
+			"arch": [
+				/* "x64", */
+				"ia32"
+			]
+		}
+	]
+},
+"nsis": {
+	"oneClick": false, // 一键安装
+	"perMachine": true, // 是否开启安装时权限限制（此电脑或当前用户）
+	"allowElevation": true, // 允许请求提升。 如果为false，则用户必须使用提升的权限重新启动安装程序。
+	"allowToChangeInstallationDirectory": true, // 允许修改安装目录
+	"installerIcon": "./public/logo.ico", // 安装图标
+	"uninstallerIcon": "./public/logo.ico", //卸载图标
+	"installerHeaderIcon": "./public/logo.ico", // 安装时头部图标
+	"createDesktopShortcut": true, // 创建桌面图标
+	"createStartMenuShortcut": true, // 创建开始菜单图标
+	"shortcutName": "IMusic" // 图标名称
+},
+"mac":{
+	'icon': './public/icon.icns',
+	"category": "public.app-category.music",
+	"artifactName": "${productName}-${version}-${arch}.${ext}"
+	},
+	'dmg': {
+		'title': 'I Music',
+		"background": "./public/appdmg.png",
+		'icon': './public/icon.icns',
+		"iconSize":'100',
+		'contents': [
+			{
+			  'x': 110,
+			  'y': 280
+			},
+			{
+			  'x': 380,
+			  'y': 280,
+			  'type': 'link',
+			  'path': '/Applications'
+			}
+		],
+		'window': {
+			'x': 500,
+			'y': 520
+		}
+	}
+}
 ```
 
   
