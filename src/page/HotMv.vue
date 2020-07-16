@@ -57,7 +57,7 @@ export default {
         //加载默认mv
         loadHotMv() {
             axios
-                .get(this.$store.state.musicstore.api + "/top/mv?limit="+this.limit, {})
+                .get(this.$store.state.musicstore.api + "/top/mv?limit="+this.limit+"&offset="+this.mvList.length, {})
                 .then((res) => {
                     console.log("mv数据是:", res);
                     if (res.data.code === 200) {
@@ -70,13 +70,20 @@ export default {
         },
         infiniteHandler($state) {
             console.log("触发");
-            setTimeout(() => {
-                const temp = [];
-                $state.complete();
-                this.limit = parseInt(this.limit+10)
-                this.loadHotMv()
-                $state.loaded();
-            }, 1000);
+             axios
+                .get(this.$store.state.musicstore.api + "/top/mv?limit="+this.limit+"&offset="+this.mvList.length, {})
+                .then((res) => {
+                    if (res.data.code === 200) {
+                        if(res.data.data.length===0){
+                            $state.complete();
+                        }
+                        this.mvList = this.mvList.concat(res.data.data);
+                        $state.loaded();
+                    }
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
         },
         //打开mv
         viewMv(item) {
@@ -152,6 +159,9 @@ export default {
             padding: 10px;
             font-size: 12px;
         }
+    }
+    .infinite-loading-container{
+        width: 100%;
     }
 }
 </style>
