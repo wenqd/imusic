@@ -1,16 +1,15 @@
 <template>
     <div id="app">
-        <HomePage msg="I-Music" />
+       <!--  <HomePage msg="I-Music" /> -->
+       <router-view></router-view>
     </div>
 </template>
 
 <script>
-import HomePage from "./main/HomePage.vue";
 
 export default {
     name: "App",
     components: {
-        HomePage
     }
 };
 </script>

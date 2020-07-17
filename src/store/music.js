@@ -16,6 +16,8 @@ const musicstore = {
         },
         playList:[],//歌单列表
         showPanel: "online", //显示的面板
+        desktopLyric:false,//桌面歌词开关
+        currLyricText:"rerweewqewqe",//当前歌词
     },
     mutations: {
         updateCurrMusic(state, music) {
@@ -66,6 +68,12 @@ const musicstore = {
         updateShowPanel(state, data) {
             state.showPanel = data;
         },
+        updateDesktopLyric(state, bool){
+            state.desktopLyric = bool;
+        },
+        updateCurrLyricText(state, text){
+            state.currLyricText = text;
+        }
     },
 };
 export default musicstore

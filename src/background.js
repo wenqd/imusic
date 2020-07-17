@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain, dialog, Menu,Tray } from "electron";
+import { app,screen, protocol, BrowserWindow, ipcMain, dialog, Menu,Tray } from "electron";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import path from 'path'
 const MusicStore = require("./common/js/MusicDataStore");
@@ -67,7 +67,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 console.log("环境："+process.env)
 
 let win;
-
+let lyricWindow;
 protocol.registerSchemesAsPrivileged([
     { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
@@ -82,6 +82,7 @@ function createWindow() {
         width: 990,
         height: 700,
         frame: isFrame,
+        transparent:true,
         webPreferences: {
             nodeIntegration: true, //process.env.ELECTRON_NODE_INTEGRATION
         },
@@ -94,7 +95,7 @@ function createWindow() {
     } else {
         createProtocol("app");
         // Load the index.html when not in development
-        win.loadURL("app://./index.html");
+        win.loadURL("http://localhost:8080");
     }
 
     win.on("closed", () => {
@@ -176,6 +177,28 @@ ipcMain.on("window-close", function() {
 //接收隐藏任务栏命令
 ipcMain.on("window-hide", function() {
     win.hide()
+});
+//接收新建歌词窗口命令
+ipcMain.on("newwindow-Lyric", function() {
+    let width = screen.getPrimaryDisplay().workAreaSize.width
+    let height = screen.getPrimaryDisplay().workAreaSize.height
+    lyricWindow = new BrowserWindow({
+        width: 1200,
+        height: 100,
+        x:(width-1200)/2,//设置坐标
+        y:height-200,
+        frame: false,
+        resizable:true,
+        transparent:true,
+        webPreferences: {
+            nodeIntegration: true, //process.env.ELECTRON_NODE_INTEGRATION
+        },
+    });
+    lyricWindow.loadURL("http://localhost:8080#/lyric");
+});
+//接收关闭歌词窗口命令
+ipcMain.on("closewindow-Lyric", function() {
+    lyricWindow.close()
 });
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

@@ -65,8 +65,7 @@
                     :lazy="true"
                     @change="sliderChange"
                 ></vue-slider>
-                <div class="lyric">{{currTimeLyric}}</div>
-
+                <div class="lyric">{{ currTimeLyric }}</div>
             </div>
             <div class="end-time">
                 {{ playStatus.duration }}
@@ -74,11 +73,11 @@
             <i
                 :class="{
                     'voleme-icon': true,
-                    'ifont': true,
+                    ifont: true,
                     'icon-yinliang': volume !== 0,
                     'icon-jingyin': volume === 0
                 }"
-                @click="volume===0?volume=50:volume=0"
+                @click="volume === 0 ? (volume = 50) : (volume = 0)"
             ></i>
             <vue-slider
                 class="volume"
@@ -89,12 +88,21 @@
             <i
                 :class="{
                     'playtype-icon': true,
-                    'ifont': true,
+                    ifont: true,
                     'icon-danquxunhuan': playtype === 0,
                     'icon-suiji': playtype === 2,
                     'icon-shunxubofang': playtype === 1
                 }"
                 @click="playTypeChange"
+            ></i>
+            <i
+                :class="{
+                    'icon-lyric': true,
+                    ifont: true,
+                    'icon-ci': true,
+                    active: $store.state.musicstore.desktopLyric
+                }"
+                @click="desktopLyric"
             ></i>
         </div>
         <div class="poster" v-show="posterShow">
@@ -111,6 +119,7 @@
 </template>
 
 <script>
+const { ipcRenderer } = window.require("electron");
 import VueSlider from "vue-slider-component";
 import PosterLyric from "../page/PosterLyric";
 import "vue-slider-component/theme/default.css";
@@ -123,10 +132,10 @@ export default {
     data() {
         return {
             music: this.currMusic,
-            playtype:1,//播放模式  0:单曲循环  1 顺序播放  2 随机播放
+            playtype: 1, //播放模式  0:单曲循环  1 顺序播放  2 随机播放
             volume: 80, //音量
             posterShow: false, //海报是否显示
-            currTimeLyric:"",//当前时间歌词
+            currTimeLyric: "" //当前时间歌词
         };
     },
     components: { VueSlider, PosterLyric },
@@ -191,13 +200,19 @@ export default {
                 this.posterShow = false;
             }
         },
-        volume(){
+        volume() {
             //音量条件
-            this.sliderChangeVolume(this.volume)
+            this.sliderChangeVolume(this.volume);
         },
         //播放模式
-        playtype(){
-
+        playtype() {},
+        //歌词改变时：
+        currTimeLyric() {
+            this.$store.commit(
+                "musicstore/updateCurrLyricText",
+                this.currTimeLyric
+            );
+            window.localStorage.setItem("currlyric", this.currTimeLyric);
         }
     },
     mounted() {
@@ -237,9 +252,12 @@ export default {
             }
         },
         //切换音乐,step:向后播放第几首
-        changeMusic(type,tempPlayType) {
+        changeMusic(type, tempPlayType) {
             /*  start 当单曲循环时，遇到vip歌曲强制调到下一首 */
-            tempPlayType  = this.playtype===0?tempPlayType || this.playtype:tempPlayType = this.playtype
+            tempPlayType =
+                this.playtype === 0
+                    ? tempPlayType || this.playtype
+                    : (tempPlayType = this.playtype);
             /**end */
             const v_this = this;
             let index = 0;
@@ -250,10 +268,10 @@ export default {
             });
             let music = {};
             switch (tempPlayType) {
-                case 0://单曲循环
+                case 0: //单曲循环
                     music = this.allTracks[index];
                     break;
-                case 1://顺序播放
+                case 1: //顺序播放
                     if (type == "pre") {
                         if (index === 0) {
                             index = this.allTracks.length;
@@ -266,8 +284,10 @@ export default {
                         music = this.allTracks[index + 1];
                     }
                     break;
-                case 2://随机播放
-                    music = this.allTracks[this.random(0,this.allTracks.length-1)];
+                case 2: //随机播放
+                    music = this.allTracks[
+                        this.random(0, this.allTracks.length - 1)
+                    ];
                     break;
                 default:
                     if (type == "pre") {
@@ -312,7 +332,7 @@ export default {
                                     );
                                     setTimeout(function() {
                                         //切换音乐
-                                        v_this.changeMusic("next",-1);
+                                        v_this.changeMusic("next", -1);
                                     }, 2000);
                                 } else {
                                     musicAudio.src = onlineUrl;
@@ -363,16 +383,28 @@ export default {
             musicAudio.volume = parseFloat(value / 100);
         },
         //播放模式修改
-        playTypeChange(){
-            this.playtype = (this.playtype + 1)%3
+        playTypeChange() {
+            this.playtype = (this.playtype + 1) % 3;
         },
         dragFormatter(val) {
             let times = parseFloat(musicAudio.duration * (val / 100));
             return this.timeToMinute(times);
         },
         //实时歌词
-        currTimeLyricEvent(txt){
-            this.currTimeLyric = txt
+        currTimeLyricEvent(txt) {
+            this.currTimeLyric = txt;
+        },
+        //桌面歌词
+        desktopLyric() {
+            if (this.$store.state.musicstore.desktopLyric) {
+                //桌面歌词开关
+                this.$store.commit("musicstore/updateDesktopLyric", false);
+                ipcRenderer.send("closewindow-Lyric");
+            } else {
+                this.$store.commit("musicstore/updateDesktopLyric", true);
+                //新建桌面歌词窗体
+                ipcRenderer.send("newwindow-Lyric");
+            }
         },
         // 秒转换分钟00:00:00格式
         timeToMinute(times) {
@@ -400,7 +432,7 @@ export default {
             return t;
         },
         //生成随机数
-        random(min,max){
+        random(min, max) {
             var range = max - min;
             var rand = Math.random();
             var num = min + Math.round(rand * range);
@@ -454,10 +486,10 @@ export default {
         .progress {
             flex: 1;
             margin: 2px 0;
-            .vue-slider{
+            .vue-slider {
                 box-sizing: initial;
             }
-            .lyric{
+            .lyric {
                 text-align: center;
                 font-size: 12px;
                 box-sizing: initial;
@@ -472,9 +504,17 @@ export default {
             width: 100px !important;
             box-sizing: initial;
         }
-        .playtype-icon{
+        .playtype-icon {
             cursor: pointer;
             margin-left: 10px;
+        }
+        .icon-lyric {
+            cursor: pointer;
+            margin-left: 10px;
+            line-height: 22px;
+        }
+        .active {
+            color: #c81623;
         }
     }
     .audio-setting {
