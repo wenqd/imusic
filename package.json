@@ -19,7 +19,7 @@
   "main": "background.js",
   "dependencies": {
     "@better-scroll/core": "^2.0.0-beta.10",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "express": "^4.17.1",
     "git": "^0.1.5",
     "lyric-parser": "git+https://github.com/Palereed/lyric-parser.git",
